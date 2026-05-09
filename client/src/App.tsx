@@ -21,6 +21,7 @@ import DashboardHome from "@/Pages/UserDashboard/DashboardHome";
 import DashboardProfile from "@/Pages/UserDashboard/DashboardProfile";
 import DashboardSettings from "@/Pages/UserDashboard/DashboardSettings";
 import AdminDashboard from "@/Pages/AdminDashboard/AdminDashboard";
+import CaptainView from "@/Pages/CaptainView/CaptainView";
 import LoginPage from "@/Pages/LoginPage/LoginPage";
 import RegisterPage from "@/Pages/RegisterPage/RegisterPage";
 import OTPPage from "@/Pages/OTPPage/OTPPage";
@@ -66,12 +67,12 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-otp" element={<OTPPage />} />
 
-        {/* Protected Dashboard Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<UserDashboard />}>
             <Route index element={<DashboardHome />} />
             <Route path="profile" element={<DashboardProfile />} />
             <Route path="settings" element={<DashboardSettings />} />
+            <Route path="captain" element={<CaptainView />} />
           </Route>
         </Route>
 

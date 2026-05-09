@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
 import { useFleetStore } from "@/store/fleetStore";
-import { ShipState } from "@/types/fleet";
+import { ShipState, Zone } from "@/types/fleet";
+import { ZoneDrawer } from "./ZoneDrawer";
+import useUserStore from "@/store/userStore";
+import { useMap } from "@vis.gl/react-google-maps";
 
 const MAP_ID = "FLEET_COMMAND_MAP_ID";
 
@@ -47,9 +50,56 @@ function ShipMarker({ ship, selected }: { ship: ShipState; selected: boolean }) 
   );
 }
 
+
+
+/** Helper component to render a polygon using Google Maps API */
+function ZonePolygon({ zone }: { zone: Zone }) {
+  const map = useMap();
+  const [polygon, setPolygon] = useState<google.maps.Polygon | null>(null);
+
+  useEffect(() => {
+    if (!map) return;
+
+    const paths = zone.polygon.map(p => ({ lat: p[0], lng: p[1] }));
+    
+    const p = new google.maps.Polygon({
+      paths,
+      strokeColor: "#ef4444",
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: "#ef4444",
+      fillOpacity: 0.35,
+      map,
+    });
+
+    // Add tooltip
+    const infoWindow = new google.maps.InfoWindow({
+      content: `<div style="padding: 4px; font-weight: bold; color: #ef4444;">${zone.name}</div>`
+    });
+
+    p.addListener('mouseover', (e: any) => {
+      infoWindow.setPosition(e.latLng);
+      infoWindow.open(map);
+    });
+
+    p.addListener('mouseout', () => {
+      infoWindow.close();
+    });
+
+    setPolygon(p);
+
+    return () => {
+      p.setMap(null);
+    };
+  }, [map, zone]);
+
+  return null;
+}
+
 export default function FleetMap() {
-  const { ships, selectedShipId } = useFleetStore();
+  const { ships, zones, selectedShipId } = useFleetStore();
   const [apiKey, setApiKey] = useState("");
+  const { user } = useUserStore();
 
   useEffect(() => {
     setApiKey(import.meta.env.VITE_GOOGLE_MAPS_KEY || "");
@@ -74,8 +124,9 @@ export default function FleetMap() {
         defaultZoom={7}
         gestureHandling="greedy"
         disableDefaultUI={true}
-        className="w-full h-full"
+        className="w-full h-full relative"
       >
+        {/* Render Ships */}
         {ships.map((ship) => (
           <ShipMarker 
             key={ship.shipId} 
@@ -83,6 +134,14 @@ export default function FleetMap() {
             selected={ship.shipId === selectedShipId} 
           />
         ))}
+
+        {/* Render Zones */}
+        {zones.map((zone) => (
+          <ZonePolygon key={zone.zoneId} zone={zone} />
+        ))}
+
+        {/* Zone Drawing Tools (Admin only) */}
+        {user?.role === "admin" && <ZoneDrawer />}
       </Map>
     </APIProvider>
   );

@@ -7,6 +7,7 @@ interface FleetState {
   zones: Zone[];
   ports: Port[];
   selectedShipId: string | null;
+  activeDirective: Directive | null;
 
   // Actions
   setInitialState: (data: { ships: ShipState[]; alerts: Alert[]; zones: Zone[]; ports: Port[] }) => void;
@@ -16,6 +17,7 @@ interface FleetState {
   removeZone: (zoneId: string) => void;
   addAlert: (alert: Alert) => void;
   acknowledgeAlert: (alertId: string) => void;
+  setActiveDirective: (directive: Directive | null) => void;
 }
 
 export const useFleetStore = create<FleetState>((set) => ({
@@ -24,6 +26,7 @@ export const useFleetStore = create<FleetState>((set) => ({
   zones: [],
   ports: [],
   selectedShipId: null,
+  activeDirective: null,
 
   setInitialState: (data) => set({ ...data }),
 
@@ -57,4 +60,6 @@ export const useFleetStore = create<FleetState>((set) => ({
     set((state) => ({
       alerts: state.alerts.map((a) => (a.alertId === alertId ? { ...a, acknowledged: true } : a)),
     })),
+
+  setActiveDirective: (directive) => set({ activeDirective: directive }),
 }));

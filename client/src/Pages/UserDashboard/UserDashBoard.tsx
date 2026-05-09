@@ -8,8 +8,8 @@ import {
   LogOut,
   Menu,
   X,
-  Sun,
   Moon,
+  Ship,
 } from "lucide-react";
 import useUserStore from "@/store/userStore";
 import { cn } from "@/lib/utils";
@@ -51,6 +51,25 @@ export default function UserDashboard() {
   const { user, token, logout } = useUserStore();
   const { theme, toggleTheme } = useTheme();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // Filter links based on role
+  const getSidebarLinks = () => {
+    let links = [...sidebarLinks];
+    
+    // If Captain, replace Command Center with Captain View
+    if (user?.role === "captain") {
+      links = links.filter(l => l.path !== "/dashboard");
+      links.unshift({
+        title: "Captain View",
+        icon: Ship,
+        path: "/dashboard/captain",
+        exact: true,
+      });
+    }
+    return links;
+  };
+
+  const activeLinks = getSidebarLinks();
 
   useEffect(() => {
     // Redirect if not logged in
@@ -149,7 +168,7 @@ export default function UserDashboard() {
 
           <div className="flex-1 px-4 py-2">
             <nav className="space-y-1">
-              {sidebarLinks.map((link) => (
+              {activeLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
@@ -289,7 +308,7 @@ export default function UserDashboard() {
               </div>
 
               <nav className="space-y-1 mb-6">
-                {sidebarLinks.map((link) => (
+                {activeLinks.map((link) => (
                   <Link
                     key={link.path}
                     to={link.path}

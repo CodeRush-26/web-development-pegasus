@@ -6,7 +6,7 @@ import useUserStore from "../store/userStore";
 
 export function useFleetSocket() {
   const { ws, connect, disconnect } = useSocketStore();
-  const { setInitialState, applyUpdate } = useFleetStore();
+  const { setInitialState, applyUpdate, setActiveDirective } = useFleetStore();
   const token = useUserStore((state) => state.token);
 
   useEffect(() => {
@@ -38,6 +38,18 @@ export function useFleetSocket() {
 
           case "directive_issued":
             toast.info(`Directive issued to ${msg.payload.directive.shipId}`);
+            break;
+
+          case "directive_received":
+            setActiveDirective(msg.payload.directive);
+            toast.error("NEW DIRECTIVE RECEIVED FROM COMMAND");
+            const audio2 = new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..."); 
+            audio2.play().catch(() => {});
+            break;
+
+          case "directive_accepted":
+            setActiveDirective(null);
+            toast.success("Directive accepted");
             break;
 
           case "distress_parsed":
