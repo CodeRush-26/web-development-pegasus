@@ -29,9 +29,9 @@ export default function ShipDetailPage() {
   const fuelPercentage = Math.round((ship.fuel / ship.fuelCapacity) * 100);
 
   let statusColor = "text-green-500";
-  if (ship.status === "rerouting") statusColor = "text-amber-500";
+  if (ship.status === "rerouting" || ship.status === "evacuating") statusColor = "text-amber-500";
   if (ship.status === "distressed" || ship.status === "stranded" || ship.status === "out_of_fuel") statusColor = "text-red-500 animate-pulse";
-  if (ship.status === "stopped") statusColor = "text-gray-500";
+  if (ship.status === "holding") statusColor = "text-gray-500";
 
   return (
     <div className="space-y-6">

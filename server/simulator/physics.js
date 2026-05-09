@@ -69,7 +69,7 @@ function advanceShip(ship, weatherPenalty = false) {
   if (
     next.status === "arrived" ||
     next.status === "out_of_fuel" ||
-    next.status === "stopped"
+    next.status === "holding"
   ) {
     return next;
   }

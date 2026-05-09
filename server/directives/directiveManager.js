@@ -61,7 +61,8 @@ function acceptDirective(shipId, ship, zones, weatherCells) {
   let updatedShip = { ...ship, activeDirective: null };
 
   if (directive.type === "hold_position") {
-    updatedShip.status = "stopped";
+    updatedShip.status = "holding";
+    updatedShip.isSimulating = true;
     // We preserve currentPath so the route still shows on the map.
   } else if (directive.type === "reroute_to_port" && directive.targetPortId) {
     const port = PORTS_MAP.get(directive.targetPortId);
@@ -71,18 +72,22 @@ function acceptDirective(shipId, ship, zones, weatherCells) {
       updatedShip.destinationPosition = port.position;
       updatedShip.status = "rerouting";
       updatedShip.currentPath = [];
+      updatedShip.isSimulating = true;
     }
   } else if (directive.type === "divert_to_waypoint" && directive.targetWaypoint) {
     // Insert waypoint at front of current path
     updatedShip.currentPath = [directive.targetWaypoint, ...ship.currentPath];
     updatedShip.status = "rerouting";
+    updatedShip.isSimulating = true;
   } else if (directive.type === "evacuate_zone") {
     const route = computeEscapeRoute(updatedShip, zones, weatherCells);
     if (route.path && route.path.length > 0) {
       updatedShip.currentPath = route.path;
       updatedShip.status = "evacuating"; // moving to the escape point
+      updatedShip.isSimulating = true;
     } else {
-      updatedShip.status = "stopped"; // no escape found
+      updatedShip.status = "holding"; // no escape found
+      updatedShip.isSimulating = true;
     }
   }
 

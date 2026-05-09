@@ -14,7 +14,7 @@ export interface ShipState {
     | "normal"
     | "rerouting"
     | "distressed"
-    | "stopped"
+    | "holding"
     | "stranded"
     | "arrived"
     | "out_of_fuel"
