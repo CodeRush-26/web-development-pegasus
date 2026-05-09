@@ -1,0 +1,89 @@
+import { useEffect, useState } from "react";
+import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
+import { useFleetStore } from "@/store/fleetStore";
+import { ShipState } from "@/types/fleet";
+
+const MAP_ID = "FLEET_COMMAND_MAP_ID";
+
+/** Maps a ship's heading to a rotation angle for the marker icon */
+function ShipMarker({ ship, selected }: { ship: ShipState; selected: boolean }) {
+  const isAdverse = ship.weatherPenaltyActive;
+  
+  // Status colors matching our design system
+  let color = "#10b981"; // green (normal/arrived)
+  if (ship.status === "rerouting") color = "#f59e0b"; // amber
+  if (ship.status === "distressed" || ship.status === "stranded" || ship.status === "out_of_fuel") color = "#ef4444"; // red
+  if (ship.status === "stopped") color = "#6b7280"; // gray
+
+  return (
+    <AdvancedMarker
+      position={{ lat: ship.position[0], lng: ship.position[1] }}
+      title={`${ship.name} (${ship.status})`}
+      zIndex={selected ? 100 : 1}
+      onClick={() => useFleetStore.getState().setSelectedShip(ship.shipId)}
+    >
+      <div 
+        className={`relative flex items-center justify-center transition-transform ${selected ? 'scale-125' : 'scale-100 hover:scale-110'}`}
+        style={{ transform: `rotate(${ship.heading}deg)` }}
+      >
+        <svg 
+          width="24" 
+          height="24" 
+          viewBox="0 0 24 24" 
+          fill={color} 
+          stroke={selected ? "white" : "black"} 
+          strokeWidth="1.5"
+          className="drop-shadow-md"
+        >
+          {/* Top-down ship silhouette */}
+          <path d="M12 2 L16 8 L16 20 C16 21.1 15.1 22 14 22 L10 22 C8.9 22 8 21.1 8 20 L8 8 Z" />
+        </svg>
+        
+        {isAdverse && (
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border border-white animate-pulse" title="Adverse Weather" />
+        )}
+      </div>
+    </AdvancedMarker>
+  );
+}
+
+export default function FleetMap() {
+  const { ships, selectedShipId } = useFleetStore();
+  const [apiKey, setApiKey] = useState("");
+
+  useEffect(() => {
+    setApiKey(import.meta.env.VITE_GOOGLE_MAPS_KEY || "");
+  }, []);
+
+  if (!apiKey) {
+    return (
+      <div className="w-full h-full bg-[var(--dashboard-bg)] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-2">Google Maps API Key Missing</p>
+          <p className="text-sm text-[var(--dashboard-text-muted)]">Check your .env file</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <APIProvider apiKey={apiKey}>
+      <Map
+        mapId={MAP_ID}
+        defaultCenter={{ lat: 26.5, lng: 56.0 }} // Strait of Hormuz
+        defaultZoom={7}
+        gestureHandling="greedy"
+        disableDefaultUI={true}
+        className="w-full h-full"
+      >
+        {ships.map((ship) => (
+          <ShipMarker 
+            key={ship.shipId} 
+            ship={ship} 
+            selected={ship.shipId === selectedShipId} 
+          />
+        ))}
+      </Map>
+    </APIProvider>
+  );
+}
