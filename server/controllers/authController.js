@@ -1,4 +1,5 @@
 import User from '../models/User.js'
+import Invite from '../models/Invite.js'
 import { sendOTP, generateOTP } from '../services/emailService.js'
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
@@ -10,6 +11,12 @@ export const register = async (req, res) => {
   try {
     const { name, email, password, isGoogle } = req.body
 
+    // Check if user is invited
+    const invite = await Invite.findOne({ email: email.toLowerCase() })
+    if (!invite) {
+      return res.status(403).json({ message: 'Access not authorized. Contact Fleet Command administrator.' })
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ email })
     if (existingUser) {
@@ -20,12 +27,14 @@ export const register = async (req, res) => {
     const otp = generateOTP()
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
 
-    // Create new user
+    // Create new user with role from invite
     const user = new User({
       name,
       email,
       password: isGoogle ? undefined : password,
       isGoogle: isGoogle || false,
+      role: invite.role,
+      assignedShipId: invite.assignedShipId,
       otp: {
         code: otp,
         expiresAt: otpExpiry
@@ -33,6 +42,10 @@ export const register = async (req, res) => {
     })
 
     await user.save()
+
+    // Mark invite as accepted
+    invite.status = 'accepted'
+    await invite.save()
 
     // Send OTP email
     if (!isGoogle) {
@@ -58,6 +71,12 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password, isGoogle } = req.body
+
+    // Check if user is invited (block existing users without invites)
+    const invite = await Invite.findOne({ email: email.toLowerCase() })
+    if (!invite) {
+      return res.status(403).json({ message: 'Access not authorized. Contact Fleet Command administrator.' })
+    }
 
     // Find user
     const user = await User.findOne({ email })
@@ -163,6 +182,12 @@ export const googleAuth = async (req, res) => {
   try {
     const { name, email, profilePicture } = req.body
 
+    // Check if user is invited
+    const invite = await Invite.findOne({ email: email.toLowerCase() })
+    if (!invite) {
+      return res.status(403).json({ message: 'Access not authorized. Contact Fleet Command administrator.' })
+    }
+
     let user = await User.findOne({ email })
 
     if (!user) {
@@ -172,9 +197,15 @@ export const googleAuth = async (req, res) => {
         email,
         isGoogle: true,
         isVerified: true,
+        role: invite.role,
+        assignedShipId: invite.assignedShipId,
         profilePicture
       })
       await user.save()
+
+      // Mark invite as accepted
+      invite.status = 'accepted'
+      await invite.save()
     }
 
     // Generate JWT token — include id, role, assignedShipId for WS auth

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/api/api";
 import useUserStore from "@/store/userStore";
+import { InviteManager } from "./InviteManager";
 import {
   Users,
   Search,
@@ -13,8 +14,10 @@ import {
   Check,
   X,
   Trash2,
+  UserPlus
 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface UserData {
   _id: string;
@@ -34,6 +37,7 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState<UserData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState<"users" | "invites">("users");
 
   // Fetch all users
   const fetchUsers = async () => {
@@ -96,8 +100,33 @@ export default function AdminDashboard() {
             <Shield className="text-[var(--primary)]" />
             Admin Dashboard
           </h1>
-          <div className="flex items-center gap-2">
-            <div className="relative">
+          
+          <div className="flex items-center gap-2 bg-[var(--dashboard-card)] p-1 rounded-lg border border-[var(--dashboard-border)]">
+            <button
+              onClick={() => setActiveTab("users")}
+              className={cn(
+                "px-4 py-2 rounded-md text-sm font-medium flex items-center gap-2 transition-colors",
+                activeTab === "users" ? "bg-[var(--primary)] text-white" : "text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text)]"
+              )}
+            >
+              <Users size={16} /> User Management
+            </button>
+            <button
+              onClick={() => setActiveTab("invites")}
+              className={cn(
+                "px-4 py-2 rounded-md text-sm font-medium flex items-center gap-2 transition-colors",
+                activeTab === "invites" ? "bg-[var(--primary)] text-white" : "text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text)]"
+              )}
+            >
+              <UserPlus size={16} /> Crew Invitations
+            </button>
+          </div>
+        </div>
+
+        {activeTab === "users" ? (
+          <>
+            <div className="flex items-center gap-2 mb-6">
+              <div className="relative">
               <Search
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 size={18}
@@ -121,7 +150,6 @@ export default function AdminDashboard() {
               />
             </button>
           </div>
-        </div>
 
         {/* Users Table */}
         <div className="bg-[var(--dashboard-card-bg)] border border-[var(--dashboard-border)] rounded-lg overflow-hidden">
@@ -262,8 +290,12 @@ export default function AdminDashboard() {
               <p className="text-sm text-[var(--dashboard-text-muted)]">Active Now</p>
               <p className="text-2xl font-bold text-green-500">Live</p>
             </div>
+            </div>
           </div>
-        </div>
+        </>
+      ) : (
+          <InviteManager />
+        )}
       </div>
     </div>
   );

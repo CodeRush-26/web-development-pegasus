@@ -29,6 +29,8 @@ import LoginPage from "@/Pages/LoginPage/LoginPage";
 import RegisterPage from "@/Pages/RegisterPage/RegisterPage";
 import OTPPage from "@/Pages/OTPPage/OTPPage";
 
+import ShipDetailPage from "@/Pages/CommandCenter/ShipDetailPage";
+
 // Styles
 import "./App.css";
 
@@ -77,6 +79,7 @@ function App() {
 
             {/* Fleet Map — live map for everyone */}
             <Route path="map" element={<FleetMapPage />} />
+            <Route path="ships/:shipId" element={<ShipDetailPage />} />
 
             {/* Directives — available to all roles */}
             <Route path="directives" element={<DirectivesPage />} />

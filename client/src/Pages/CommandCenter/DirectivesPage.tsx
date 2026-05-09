@@ -12,6 +12,7 @@ import { useSocketStore } from "@/store/socketStore";
 import useUserStore from "@/store/userStore";
 import { IssueDirectiveModal } from "@/components/ui/issue-directive-modal";
 import { ShipState } from "@/types/fleet";
+import { Link } from "react-router-dom";
 import {
   FileText,
   Ship,
@@ -280,10 +281,12 @@ export default function DirectivesPage() {
                         className="hover:bg-[var(--dashboard-card-hover)] transition-colors"
                       >
                         <td className="px-4 py-3">
-                          <div className="font-medium">{ship.name}</div>
-                          <div className="text-xs font-mono text-[var(--dashboard-text-muted)]">
-                            {ship.shipId}
-                          </div>
+                          <Link to={`/dashboard/ships/${ship.shipId}`} className="hover:text-[var(--primary)] transition-colors inline-block">
+                            <div className="font-medium">{ship.name}</div>
+                            <div className="text-xs font-mono text-[var(--dashboard-text-muted)]">
+                              {ship.shipId}
+                            </div>
+                          </Link>
                         </td>
                         <td className="px-4 py-3">
                           <StatusBadge status={ship.status} />

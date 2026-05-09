@@ -169,7 +169,9 @@ export default function DashboardHome() {
                 <tr key={ship.shipId} className="hover:bg-[var(--dashboard-card-hover)] transition-colors">
                   <td className="px-6 py-4 font-mono font-medium">{ship.shipId}</td>
                   <td className="px-6 py-4 flex items-center gap-2">
-                    {ship.name}
+                    <Link to={`/dashboard/ships/${ship.shipId}`} className="hover:text-[var(--primary)] transition-colors">
+                      {ship.name}
+                    </Link>
                     {ship.weatherPenaltyActive && <span title="Adverse Weather"><Wind size={14} className="text-amber-500" /></span>}
                   </td>
                   <td className="px-6 py-4">
