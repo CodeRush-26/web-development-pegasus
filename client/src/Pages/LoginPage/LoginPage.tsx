@@ -130,7 +130,7 @@ export default function LoginPage() {
           <div className="hidden lg:block relative">
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <img
-                src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=700&fit=crop"
+                src="https://images.unsplash.com/photo-1541888062821-2e6f2122602f?w=800&h=900&fit=crop"
                 alt="Fleet Command Center"
                 className="w-full h-auto object-cover aspect-square"
               />

@@ -8,6 +8,7 @@ import {
   LogOut,
   Menu,
   X,
+  Sun,
   Moon,
   Ship,
 } from "lucide-react";

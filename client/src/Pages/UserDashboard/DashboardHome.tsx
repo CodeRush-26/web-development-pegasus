@@ -9,6 +9,7 @@ import {
   ArrowRight,
   Activity,
   History,
+} from "lucide-react";
 import { StatsCard } from "@/components/ui/stats-card";
 import { useFleetStore } from "@/store/fleetStore";
 import { useFleetSocket } from "@/hooks/useFleetSocket";

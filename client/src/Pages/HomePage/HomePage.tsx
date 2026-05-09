@@ -32,7 +32,9 @@ export default function HomePage() {
             <div className="inline-block w-fit mb-6">
               <div className="px-4 py-2 bg-[var(--primary)]/10 rounded-full border border-[var(--primary)]/20 flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-[var(--primary)]" />
-                <span className="text-sm font-medium text-[var(--primary)]">Maritime Command Center</span>
+                <span className="text-sm font-medium text-[var(--primary)]">
+                  Maritime Command Center
+                </span>
               </div>
             </div>
 
@@ -41,7 +43,10 @@ export default function HomePage() {
             </h1>
 
             <p className="text-lg text-[var(--foreground-muted)] mb-8 leading-relaxed max-w-lg">
-              A real-time command and control platform for maritime operations in the Strait of Hormuz. Monitor 15 cargo ships, manage restricted zones, and respond to distress alerts with AI-powered intelligence.
+              A real-time command and control platform for maritime operations
+              in the Strait of Hormuz. Monitor 15 cargo ships, manage restricted
+              zones, and respond to distress alerts with AI-powered
+              intelligence.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
@@ -62,16 +67,28 @@ export default function HomePage() {
 
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <div className="text-3xl font-bold text-[var(--primary)]">15</div>
-                <div className="text-sm text-[var(--foreground-muted)]">Active Ships</div>
+                <div className="text-3xl font-bold text-[var(--primary)]">
+                  15
+                </div>
+                <div className="text-sm text-[var(--foreground-muted)]">
+                  Active Ships
+                </div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-[var(--primary)]">1Hz</div>
-                <div className="text-sm text-[var(--foreground-muted)]">Update Rate</div>
+                <div className="text-3xl font-bold text-[var(--primary)]">
+                  1Hz
+                </div>
+                <div className="text-sm text-[var(--foreground-muted)]">
+                  Update Rate
+                </div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-[var(--primary)]">&lt;500ms</div>
-                <div className="text-sm text-[var(--foreground-muted)]">Latency</div>
+                <div className="text-3xl font-bold text-[var(--primary)]">
+                  &lt;500ms
+                </div>
+                <div className="text-sm text-[var(--foreground-muted)]">
+                  Latency
+                </div>
               </div>
             </div>
           </div>
@@ -88,7 +105,9 @@ export default function HomePage() {
       <section className="py-24 px-4 border-b border-[var(--border)] bg-[var(--secondary)]/50 dark:bg-[var(--secondary)]/10">
         <div className="container mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Mission Critical Features</h2>
+            <h2 className="text-4xl font-bold mb-4">
+              Mission Critical Features
+            </h2>
             <p className="text-[var(--foreground-muted)] max-w-2xl mx-auto">
               Enterprise-grade capabilities for high-stakes maritime operations
             </p>
@@ -135,7 +154,8 @@ export default function HomePage() {
               </div>
               <h3 className="text-lg font-semibold mb-2">Real-Time Sync</h3>
               <p className="text-[var(--foreground-muted)] text-sm">
-                WebSocket-powered updates with sub-second latency across all clients
+                WebSocket-powered updates with sub-second latency across all
+                clients
               </p>
             </div>
           </div>
@@ -149,7 +169,7 @@ export default function HomePage() {
             {/* Image */}
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <img
-                src="https://images.unsplash.com/photo-1578574494640-8f5fcbdc0e98?w=600&h=400&fit=crop"
+                src="https://images.unsplash.com/photo-1542159842-8356d7829707?w=800&h=600&fit=crop"
                 alt="Maritime Fleet Operations"
                 className="w-full h-auto object-cover"
               />
@@ -158,9 +178,13 @@ export default function HomePage() {
 
             {/* Content */}
             <div>
-              <h2 className="text-4xl font-bold mb-6">Advanced Fleet Management</h2>
+              <h2 className="text-4xl font-bold mb-6">
+                Advanced Fleet Management
+              </h2>
               <p className="text-[var(--foreground-muted)] mb-6 text-lg">
-                Monitor vessel telemetry in real-time with our sophisticated command center. Track speed, fuel consumption, cargo status, and environmental conditions all from one unified dashboard.
+                Monitor vessel telemetry in real-time with our sophisticated
+                command center. Track speed, fuel consumption, cargo status, and
+                environmental conditions all from one unified dashboard.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-center gap-3">
@@ -193,7 +217,9 @@ export default function HomePage() {
             <div>
               <h2 className="text-4xl font-bold mb-6">Enterprise Security</h2>
               <p className="text-[var(--foreground-muted)] mb-6 text-lg">
-                Your fleet data is protected with military-grade encryption and role-based access control. Every command is logged and auditable.
+                Your fleet data is protected with military-grade encryption and
+                role-based access control. Every command is logged and
+                auditable.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-center gap-3">
@@ -218,7 +244,7 @@ export default function HomePage() {
             {/* Image */}
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <img
-                src="https://images.unsplash.com/photo-1526374965328-7f5ae4e8b723?w=600&h=400&fit=crop"
+                src="https://images.unsplash.com/photo-1582299778219-c689d71b3e4f?w=800&h=600&fit=crop"
                 alt="Security and Command Center"
                 className="w-full h-auto object-cover"
               />
@@ -233,7 +259,8 @@ export default function HomePage() {
         <div className="container mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Take Command?</h2>
           <p className="text-[var(--foreground-muted)] max-w-2xl mx-auto mb-12 text-lg">
-            Join the operational network and start managing your fleet with precision, intelligence, and confidence.
+            Join the operational network and start managing your fleet with
+            precision, intelligence, and confidence.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -260,45 +287,6 @@ export default function HomePage() {
           <p>&copy; 2026 Fleet Command System. All rights reserved.</p>
         </div>
       </footer>
-    </div>
-  );
-}
-            <div>
-              <div className="text-4xl font-bold text-[var(--primary)] mb-2">15</div>
-              <div className="text-sm text-[var(--foreground-muted)] uppercase tracking-wider">Active Ships</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-[var(--primary)] mb-2">1Hz</div>
-              <div className="text-sm text-[var(--foreground-muted)] uppercase tracking-wider">Update Rate</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-[var(--primary)] mb-2">&lt;500ms</div>
-              <div className="text-sm text-[var(--foreground-muted)] uppercase tracking-wider">Latency</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-[var(--primary)] mb-2">24/7</div>
-              <div className="text-sm text-[var(--foreground-muted)] uppercase tracking-wider">Monitoring</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 px-4">
-        <div className="container mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Take Command?</h2>
-          <p className="text-[var(--foreground-muted)] max-w-2xl mx-auto mb-10">
-            Join the operational network and start managing your fleet with 
-            precision and intelligence.
-          </p>
-          <Link
-            to="/dashboard"
-            className="px-10 py-4 bg-[var(--primary)] text-white font-bold rounded-lg hover:bg-[var(--primary)]/90 inline-block transition-all shadow-xl shadow-[var(--primary)]/20"
-          >
-            Access Dashboard
-          </Link>
-        </div>
-      </section>
     </div>
   );
 }
