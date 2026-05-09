@@ -102,13 +102,13 @@ export function NotificationCenter({ assignedShipId }: NotificationCenterProps) 
       <div className="flex flex-col gap-3 overflow-y-auto pb-4 pr-1 scrollbar-hide">
         {/* Directives Section */}
         {myDirective && (
-          <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(245,158,11,0.15)] animate-in slide-in-from-right duration-300">
+          <div className="bg-amber-50 border border-amber-500/50 rounded-xl overflow-hidden shadow-lg animate-in slide-in-from-right duration-300">
             <div className="bg-amber-500/20 px-3 py-2 border-b border-amber-500/20 flex justify-between items-center">
-              <span className="text-[10px] text-amber-400 font-bold uppercase tracking-widest flex items-center gap-1.5">
+              <span className="text-[10px] text-amber-700 font-bold uppercase tracking-widest flex items-center gap-1.5">
                 <AlertOctagon size={12} />
                 Priority Directive
               </span>
-              <span className="text-[9px] text-amber-400/50 font-mono">
+              <span className="text-[9px] text-amber-700/60 font-mono">
                 {myDirective.directiveId.split("-")[1]}
               </span>
             </div>
@@ -116,13 +116,13 @@ export function NotificationCenter({ assignedShipId }: NotificationCenterProps) 
               <div className="flex gap-3 mb-3">
                 <div className="mt-1">{renderDirectiveIcon(myDirective.type)}</div>
                 <div className="flex-1">
-                  <h4 className="text-sm font-bold text-white capitalize">
+                  <h4 className="text-sm font-bold text-slate-900 capitalize">
                     {myDirective.type.replace(/_/g, " ")}
                   </h4>
-                  <p className="text-xs text-amber-100/70 mt-1 leading-relaxed">
+                  <p className="text-xs text-slate-800 font-medium mt-1 leading-relaxed">
                     {renderDirectiveText(myDirective)}
                   </p>
-                  <p className="text-[9px] text-white/30 font-mono mt-1">
+                  <p className="text-[9px] text-slate-500 font-mono mt-1">
                     Issued: {new Date(myDirective.issuedAt).toLocaleTimeString()}
                   </p>
                 </div>
@@ -183,17 +183,20 @@ export function NotificationCenter({ assignedShipId }: NotificationCenterProps) 
           let Icon = Info;
 
           if (alert.severity === 4) {
-            bgClass = "bg-red-500/15 border-red-500/30 shadow-[0_0_10px_rgba(220,38,38,0.1)]";
-            textClass = "text-red-400";
+            bgClass = "bg-red-100 border-red-500/50 shadow-md";
+            textClass = "text-red-700";
             Icon = ShieldAlert;
           } else if (alert.severity === 3) {
-            bgClass = "bg-orange-500/15 border-orange-500/30 shadow-[0_0_10px_rgba(249,115,22,0.1)]";
-            textClass = "text-orange-400";
+            bgClass = "bg-orange-100 border-orange-500/50 shadow-md";
+            textClass = "text-orange-700";
             Icon = AlertTriangle;
           } else if (alert.severity === 2) {
-            bgClass = "bg-amber-500/10 border-amber-500/20";
-            textClass = "text-amber-400";
+            bgClass = "bg-amber-100 border-amber-500/50 shadow-md";
+            textClass = "text-amber-700";
             Icon = AlertTriangle;
+          } else {
+            bgClass = "bg-blue-100 border-blue-500/50 shadow-md";
+            textClass = "text-blue-700";
           }
 
           return (
@@ -209,11 +212,11 @@ export function NotificationCenter({ assignedShipId }: NotificationCenterProps) 
                   <h4 className={`text-xs font-bold uppercase tracking-wider ${textClass}`}>
                     {alert.type.replace(/_/g, " ")}
                   </h4>
-                  <span className="text-[9px] font-mono text-white/30">
+                  <span className="text-[9px] font-mono text-slate-500">
                     {new Date(alert.timestamp).toLocaleTimeString()}
                   </span>
                 </div>
-                <p className="text-white/80 text-xs leading-relaxed">
+                <p className="text-slate-900 text-xs font-medium leading-relaxed">
                   {alert.message}
                 </p>
                 {!assignedShipId && (

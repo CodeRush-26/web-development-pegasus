@@ -157,7 +157,7 @@ export default function DashboardHome() {
             )}
           </div>
           <div className="p-4 border-t border-[var(--dashboard-border)]">
-            <Link to="/dashboard" className="w-full py-2 flex items-center justify-center gap-2 text-sm font-medium text-[var(--primary)] hover:bg-[var(--primary)]/5 rounded-lg transition-colors">
+            <Link to="/dashboard/history" className="w-full py-2 flex items-center justify-center gap-2 text-sm font-medium text-[var(--primary)] hover:bg-[var(--primary)]/5 rounded-lg transition-colors">
               <History size={16} />
               View Alert History
             </Link>
@@ -236,7 +236,7 @@ export default function DashboardHome() {
           </table>
         </div>
         <div className="p-3 border-t border-[var(--dashboard-border)] bg-[var(--dashboard-card-hover)]/30 text-center">
-          <Link to="/dashboard" className="text-sm font-medium text-[var(--primary)] hover:underline">
+          <Link to="/dashboard/manifest" className="text-sm font-medium text-[var(--primary)] hover:underline">
             View full manifest ({ships.length} ships)
           </Link>
         </div>

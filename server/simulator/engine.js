@@ -445,6 +445,20 @@ async function _handleClientMessage(ws, msg) {
       break;
     }
 
+    case "chat_send": {
+      const chatMsg = {
+        _id: `msg-${randomUUID().slice(0, 8)}`,
+        senderId: ws.userId,
+        senderRole: ws.role,
+        shipId: ws.assignedShipId || "COMMAND",
+        content: payload.content,
+        timestamp: Date.now(),
+      };
+      // Broadcast to all connected clients
+      broadcast(_wss, "chat_receive", chatMsg);
+      break;
+    }
+
     case "get_snapshots": {
       ws.send(JSON.stringify({
         type: "snapshots_list",

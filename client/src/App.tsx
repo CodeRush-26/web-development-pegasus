@@ -32,6 +32,8 @@ import ForgotPasswordPage from "@/Pages/ForgotPasswordPage/ForgotPasswordPage";
 import ResetPasswordPage from "@/Pages/ResetPasswordPage/ResetPasswordPage";
 
 import ShipDetailPage from "@/Pages/CommandCenter/ShipDetailPage";
+import ManifestPage from "@/Pages/CommandCenter/ManifestPage";
+import AlertHistoryPage from "@/Pages/CommandCenter/AlertHistoryPage";
 
 import CaptainLayout from "@/Pages/CaptainView/CaptainLayout";
 
@@ -81,8 +83,8 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-        {/* Protected User Routes — all inside UserDashboard layout */}
-        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+        {/* Protected Dashboard Routes — all inside UserDashboard layout */}
+        <Route element={<ProtectedRoute allowedRoles={["admin", "captain"]} />}>
           <Route path="/dashboard" element={<UserDashboard />}>
             {/* Default: Command Centre overview */}
             <Route index element={<DashboardHome />} />
@@ -97,6 +99,10 @@ function App() {
             {/* Profile & Settings — all users */}
             <Route path="profile" element={<DashboardProfile />} />
             <Route path="settings" element={<DashboardSettings />} />
+
+            {/* New Pages */}
+            <Route path="manifest" element={<ManifestPage />} />
+            <Route path="history" element={<AlertHistoryPage />} />
 
             {/* Admin-only (inside layout so sidebar is visible) */}
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>

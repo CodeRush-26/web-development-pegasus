@@ -62,8 +62,9 @@ export default function UserDashboard() {
   const getSidebarLinks = () => {
     let links = [...sidebarLinks];
 
-    // If Admin, add Playback View
+    // If Admin, remove Profile and add Playback View
     if (user?.role === "admin") {
+      links = links.filter(l => l.title !== "Profile");
       links.splice(1, 0, {
         title: "Historical Playback",
         icon: History,
