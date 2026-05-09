@@ -6,6 +6,13 @@
   status = 200
   force = true
 
+# WebSocket redirect: wss://fleetitu.netlify.app/ws → ws://168.144.79.170/ws
+[[redirects]]
+  from = "/ws*"
+  to = "http://168.144.79.170/ws:splat"
+  status = 200
+  force = true
+
 # SPA fallback
 [[redirects]]
   from = "/*"

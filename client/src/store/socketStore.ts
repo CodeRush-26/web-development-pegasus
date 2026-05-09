@@ -24,7 +24,17 @@ export const useSocketStore = create<SocketState>((set, get) => ({
 
     set({ isConnecting: true, error: null });
 
-    const wsUrl = import.meta.env.VITE_WS_URL || "ws://localhost:4000/ws";
+    // Use WSS (WebSocket Secure) in production, WS in development
+    let wsUrl = import.meta.env.VITE_WS_URL;
+    if (!wsUrl) {
+      if (import.meta.env.PROD) {
+        // Use relative path so Netlify can redirect to your backend
+        wsUrl = `wss://${window.location.host}/ws`;
+      } else {
+        wsUrl = "ws://localhost:4000/ws";
+      }
+    }
+
     // We append the token to the URL for authentication
     const newWs = new WebSocket(`${wsUrl}?token=${token}`);
 
