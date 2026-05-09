@@ -109,13 +109,11 @@ function ShipRoute({ ship, selected }: { ship: ShipState; selected: boolean }) {
   const [altLineB, setAltLineB] = useState<google.maps.Polyline | null>(null);
 
   useEffect(() => {
-    if (!map || !ship.currentPath || ship.currentPath.length < 2) return;
+    if (!map || !ship.currentPath || ship.currentPath.length < 1) return;
 
-    // We only render paths for the selected ship to avoid map clutter, unless there are very few ships.
-    // Actually, rendering for all is fine if the user wants to see the whole routing network.
-    // For this MVP, we render primary for all, but alternative routes only for the selected ship.
-
-    const path = ship.currentPath.map(p => ({ lat: p[0], lng: p[1] }));
+    // Always start the visual route from the ship's current position
+    const fullPath = [ship.position, ...ship.currentPath];
+    const path = fullPath.map(p => ({ lat: p[0], lng: p[1] }));
 
     // Primary Line
     const pLine = new google.maps.Polyline({
@@ -220,18 +218,31 @@ export default function FleetMap() {
         className="w-full h-full relative"
       >
         {/* Render Ships & Routes */}
-        {ships.map((ship) => (
-          <div key={ship.shipId}>
-            <ShipRoute 
-              ship={ship} 
-              selected={ship.shipId === selectedShipId} 
-            />
-            <ShipMarker 
-              ship={ship} 
-              selected={ship.shipId === selectedShipId} 
-            />
-          </div>
-        ))}
+        {ships.map((ship) => {
+          // Captains: only show route for their own ship
+          // Admins: show route for the selected ship
+          const showRoute =
+            user?.role === "captain"
+              ? ship.shipId === user?.assignedShipId
+              : user?.role === "admin"
+                ? ship.shipId === selectedShipId
+                : false;
+
+          return (
+            <div key={ship.shipId}>
+              {showRoute && (
+                <ShipRoute
+                  ship={ship}
+                  selected={ship.shipId === selectedShipId}
+                />
+              )}
+              <ShipMarker
+                ship={ship}
+                selected={ship.shipId === selectedShipId}
+              />
+            </div>
+          );
+        })}
 
         {/* Render Zones */}
         {zones.map((zone) => (

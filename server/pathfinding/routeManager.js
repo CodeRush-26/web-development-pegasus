@@ -17,6 +17,66 @@ const FUEL_BURN_PER_NM = 0.12;
 const DEG_TO_NM = 60;
 
 /**
+ * Finds the index of the nearest polygon vertex to a given point.
+ */
+function nearestVertexIndex(pos, polygon) {
+  let bestIdx = 0;
+  let bestDist = Infinity;
+  for (let i = 0; i < polygon.length; i++) {
+    const d = (polygon[i][0] - pos[0]) ** 2 + (polygon[i][1] - pos[1]) ** 2;
+    if (d < bestDist) {
+      bestDist = d;
+      bestIdx = i;
+    }
+  }
+  return bestIdx;
+}
+
+/**
+ * Routes along the navigable polygon boundary from startIdx to endIdx.
+ * Tries both clockwise and counter-clockwise, returns the shorter path.
+ */
+function routeAlongPolygon(startPos, endPos, polygon) {
+  const n = polygon.length - 1; // last vertex = first vertex (closed polygon)
+  const startIdx = nearestVertexIndex(startPos, polygon);
+  const endIdx = nearestVertexIndex(endPos, polygon);
+
+  if (startIdx === endIdx) {
+    return [startPos, polygon[startIdx], endPos];
+  }
+
+  // Clockwise path
+  const cwPath = [startPos];
+  let i = startIdx;
+  while (i !== endIdx) {
+    cwPath.push([...polygon[i]]);
+    i = (i + 1) % n;
+  }
+  cwPath.push([...polygon[endIdx]]);
+  cwPath.push(endPos);
+
+  // Counter-clockwise path
+  const ccwPath = [startPos];
+  i = startIdx;
+  while (i !== endIdx) {
+    ccwPath.push([...polygon[i]]);
+    i = (i - 1 + n) % n;
+  }
+  ccwPath.push([...polygon[endIdx]]);
+  ccwPath.push(endPos);
+
+  // Calculate distances and return shorter
+  const dist = (path) =>
+    path.reduce((acc, pt, idx) => {
+      if (idx === 0) return 0;
+      const prev = path[idx - 1];
+      return acc + Math.sqrt((pt[0] - prev[0]) ** 2 + (pt[1] - prev[1]) ** 2);
+    }, 0);
+
+  return dist(cwPath) <= dist(ccwPath) ? cwPath : ccwPath;
+}
+
+/**
  * Computes a fresh route for a ship to its destination port.
  * Sets ship status to 'rerouting' during computation, 'stranded' if no path.
  *
@@ -33,8 +93,12 @@ function computeRoute(ship, zones, weatherCells = []) {
   let path = findPath(ship.position, destPort.position, nodes, meta);
 
   if (!path || path.length === 0) {
-    // Fallback to a straight line to destination if A* fails
-    path = [ship.position, destPort.position];
+    // Fallback: route along the navigable water polygon boundary
+    // This guarantees the path stays in water and avoids cutting through land
+    path = routeAlongPolygon(ship.position, destPort.position, NAVIGABLE_POLYGON);
+    console.log(`[Route] ${ship.shipId}: A* failed, using polygon-edge fallback (${path.length} waypoints)`);
+  } else {
+    console.log(`[Route] ${ship.shipId}: A* found path (${path.length} waypoints)`);
   }
 
   // Fuel feasibility check

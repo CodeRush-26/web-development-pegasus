@@ -172,7 +172,7 @@ export default function LoginPage() {
           >
             <div className="relative rounded-3xl overflow-hidden shadow-2xl group">
               <motion.img
-                src="https://images.unsplash.com/photo-1632745486688-e4d4cc4518f0?w=800&h=900&fit=crop"
+                src="https://images.unsplash.com/photo-1567521464027-f127ff144326?w=800&h=900&fit=crop"
                 alt="Fleet Command Center"
                 className="w-full h-full object-cover"
                 whileHover={{ scale: 1.05 }}

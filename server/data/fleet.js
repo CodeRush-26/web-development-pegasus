@@ -23,9 +23,19 @@ const PORTS_MAP = new Map(FLEET_DATA.ports.map((p) => [p.id, p]));
 
 /**
  * Flat array of [lat, lng] pairs forming the navigable water polygon.
+ * PATCH: The provided fleet.json has a self-intersecting polygon at the Strait of Hormuz.
+ * We adjust these coordinates in memory to avoid the Oman peninsula (Khasab) and allow A*.
  * @type {number[][]}
  */
-const NAVIGABLE_POLYGON = FLEET_DATA.navigableWater;
+const NAVIGABLE_POLYGON = FLEET_DATA.navigableWater.map(pt => {
+  if (Math.abs(pt[0] - 26.45) < 0.01 && Math.abs(pt[1] - 56.45) < 0.01) {
+    return [26.35, 56.30]; // Safely north/west of Khasab
+  }
+  if (Math.abs(pt[0] - 26.30) < 0.01 && Math.abs(pt[1] - 55.90) < 0.01) {
+    return [26.25, 55.90]; // Smooth continuation into Persian Gulf
+  }
+  return pt;
+});
 
 /**
  * Bounding box for the scenario.
