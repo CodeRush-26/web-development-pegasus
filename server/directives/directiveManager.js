@@ -7,6 +7,7 @@
 
 import { randomUUID } from "crypto";
 import { PORTS_MAP } from "../data/fleet.js";
+import { computeEscapeRoute } from "../pathfinding/routeManager.js";
 
 /**
  * Active directive registry.
@@ -20,7 +21,7 @@ const _directives = new Map();
  *
  * @param {Object} params
  * @param {string} params.shipId
- * @param {'reroute_to_port'|'divert_to_waypoint'|'hold_position'} params.type
+ * @param {'reroute_to_port'|'divert_to_waypoint'|'hold_position'|'evacuate_zone'} params.type
  * @param {string|null} params.targetPortId
  * @param {number[]|null} params.targetWaypoint - [lat, lng]
  * @param {string} params.issuedBy - Admin user ID
@@ -75,6 +76,14 @@ function acceptDirective(shipId, ship, zones, weatherCells) {
     // Insert waypoint at front of current path
     updatedShip.currentPath = [directive.targetWaypoint, ...ship.currentPath];
     updatedShip.status = "rerouting";
+  } else if (directive.type === "evacuate_zone") {
+    const route = computeEscapeRoute(updatedShip, zones, weatherCells);
+    if (route.path && route.path.length > 0) {
+      updatedShip.currentPath = route.path;
+      updatedShip.status = "rerouting"; // moving to the escape point
+    } else {
+      updatedShip.status = "stopped"; // no escape found
+    }
   }
 
   return { ship: updatedShip, directive };

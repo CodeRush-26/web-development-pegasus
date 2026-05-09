@@ -111,6 +111,7 @@ export function InviteManager() {
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 className="w-full bg-[var(--dashboard-bg)] border border-[var(--dashboard-border)] rounded-md py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-[var(--primary)] appearance-none"
+              >
                 <option value="captain">Captain</option>
                 <option value="admin">Administrator</option>
               </select>

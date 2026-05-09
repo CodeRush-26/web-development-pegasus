@@ -136,4 +136,84 @@ function simplifyPath(path) {
   return result;
 }
 
-export { findPath };
+/**
+ * Finds the shortest path to the nearest safe (walkable) node.
+ * Uses BFS because edge weights are uniform (1) and we just want the nearest walkable node.
+ */
+function findEscapePath(startPos, nodes, meta) {
+  const { r: startR, c: startC } = snapToGrid(startPos[0], startPos[1], meta);
+  const rows = meta.rows;
+  const cols = meta.cols;
+
+  if (startR < 0 || startR >= rows || startC < 0 || startC >= cols) {
+    return null;
+  }
+
+  if (nodes[startR][startC].walkable) {
+    return [startPos];
+  }
+
+  const queue = [[startR, startC]];
+  const visited = new Set();
+  const parent = Array.from({ length: rows }, () => new Array(cols).fill(null));
+
+  visited.add(`${startR}_${startC}`);
+
+  const dirs = [
+    [-1, 0], [1, 0], [0, -1], [0, 1],
+    [-1, -1], [-1, 1], [1, -1], [1, 1],
+  ];
+
+  let targetR = -1;
+  let targetC = -1;
+
+  while (queue.length > 0) {
+    const [cr, cc] = queue.shift();
+
+    if (nodes[cr][cc].walkable) {
+      targetR = cr;
+      targetC = cc;
+      break;
+    }
+
+    for (const [dr, dc] of dirs) {
+      const nr = cr + dr;
+      const nc = cc + dc;
+
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+        const key = `${nr}_${nc}`;
+        if (!visited.has(key)) {
+          visited.add(key);
+          parent[nr][nc] = [cr, cc];
+          queue.push([nr, nc]);
+        }
+      }
+    }
+  }
+
+  if (targetR !== -1 && targetC !== -1) {
+    const path = [];
+    let currR = targetR;
+    let currC = targetC;
+    
+    while (currR !== null && currC !== null) {
+      const node = nodes[currR][currC];
+      path.unshift([node.lat, node.lng]);
+      
+      const p = parent[currR][currC];
+      if (p) {
+        currR = p[0];
+        currC = p[1];
+      } else {
+        break;
+      }
+    }
+    
+    path[0] = startPos;
+    return simplifyPath(path);
+  }
+
+  return null;
+}
+
+export { findPath, findEscapePath };

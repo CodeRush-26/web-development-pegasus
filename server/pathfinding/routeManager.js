@@ -6,7 +6,7 @@
  */
 
 import { buildGrid } from "./grid.js";
-import { findPath } from "./astar.js";
+import { findPath, findEscapePath } from "./astar.js";
 import { NAVIGABLE_POLYGON, PORTS_MAP } from "../data/fleet.js";
 import { randomUUID } from "crypto";
 
@@ -146,7 +146,6 @@ function pathIntersectsZone(path, zone) {
     const segMinLng = Math.min(lng1, lng2);
     const segMaxLng = Math.max(lng1, lng2);
 
-    // AABB overlap check
     if (
       segMaxLat >= zoneMinLat &&
       segMinLat <= zoneMaxLat &&
@@ -159,4 +158,21 @@ function pathIntersectsZone(path, zone) {
   return false;
 }
 
-export { computeRoute, pathIntersectsZone };
+/**
+ * Computes an escape route to the nearest safe node outside restricted zones.
+ */
+function computeEscapeRoute(ship, zones, weatherCells) {
+  const { nodes, meta } = buildGrid(NAVIGABLE_POLYGON, zones, weatherCells, ship.routingStrategy || 'optimized', ship.shipId);
+  const path = findEscapePath(ship.position, nodes, meta);
+  
+  if (path) {
+    return {
+      path,
+      estimatedFuel: path.length * FUEL_BURN_PER_NM * 1.5, // slightly higher burn for evacuation
+      feasible: true
+    };
+  }
+  return { path: [], estimatedFuel: 0, feasible: false };
+}
+
+export { computeRoute, pathIntersectsZone, computeEscapeRoute };
