@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { ShipState, Alert, Zone, Port } from "../types/fleet";
+import type { ShipState, Alert, Zone, Port, Directive } from "../types/fleet";
 
 interface FleetState {
   ships: ShipState[];

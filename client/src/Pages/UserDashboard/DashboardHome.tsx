@@ -166,7 +166,7 @@ export default function DashboardHome() {
                   <td className="px-6 py-4 font-mono font-medium">{ship.shipId}</td>
                   <td className="px-6 py-4 flex items-center gap-2">
                     {ship.name}
-                    {ship.weatherPenaltyActive && <Wind size={14} className="text-amber-500" title="Adverse Weather" />}
+                    {ship.weatherPenaltyActive && <span title="Adverse Weather"><Wind size={14} className="text-amber-500" /></span>}
                   </td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${

@@ -91,7 +91,12 @@ export function AnimatedBorder({
       >
         {children}
       </div>
-      <style jsx global>{`
+      <style>{`
+        @property --rotate {
+          syntax: "<angle>";
+          initial-value: 0deg;
+          inherits: false;
+        }
         @keyframes border-rotate {
           0% {
             --rotate: 0deg;

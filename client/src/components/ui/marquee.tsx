@@ -75,7 +75,7 @@ export function Marquee({
         {children}
       </div>
 
-      <style jsx global>{`
+      <style>{`
         @keyframes scroll {
           from {
             transform: translateX(0);

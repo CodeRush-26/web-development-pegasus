@@ -39,44 +39,13 @@ const InputOTPSlot = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        'relative h-10 w-10 text-center text-sm',
-        'border-y border-r border-input first:rounded-l-md first:border-l last:rounded-r-md',
-        'focus-within:z-10 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-background',
+        'relative flex h-10 w-10 items-center justify-center border-y border-r border-input text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md',
         isActive && 'z-10 ring-2 ring-ring ring-offset-background',
         className
       )}
       {...props}
     >
-      <input
-        className={cn(
-          'absolute inset-0 h-full w-full text-center text-sm',
-          'bg-transparent caret-transparent',
-          'disabled:cursor-not-allowed disabled:opacity-50'
-        )}
-        value={char}
-        onChange={e => {
-          const value = e.target.value
-          if (value.length <= 1) {
-            inputOTPContext.setValue(index, value)
-          }
-        }}
-        onKeyDown={e => {
-          if (e.key === 'Backspace') {
-            inputOTPContext.setValue(index, '')
-            if (index > 0) {
-              inputOTPContext.focus(index - 1)
-            }
-          } else if (e.key === 'ArrowLeft') {
-            if (index > 0) {
-              inputOTPContext.focus(index - 1)
-            }
-          } else if (e.key === 'ArrowRight') {
-            if (index < inputOTPContext.slots.length - 1) {
-              inputOTPContext.focus(index + 1)
-            }
-          }
-        }}
-      />
+      {char}
       {hasFakeCaret && (
         <div className='pointer-events-none absolute inset-0 flex items-center justify-center animate-caret-blink'>
           <div className='h-4 w-px bg-foreground duration-150' />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMap, AdvancedMarker } from "@vis.gl/react-google-maps";
 import { Plus, X, Check, Hexagon } from "lucide-react";
 import { useSocketStore } from "@/store/socketStore";
@@ -14,7 +14,7 @@ export function ZoneDrawer() {
   const [showNameDialog, setShowNameDialog] = useState(false);
 
   // We add a click listener to the map when drawing mode is active
-  useState(() => {
+  useEffect(() => {
     if (!map) return;
     
     const listener = map.addListener("click", (e: google.maps.MapMouseEvent) => {
