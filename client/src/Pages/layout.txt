@@ -1,0 +1,16 @@
+HomePage/
+    Sections/
+    HomePage.tsx
+LoginPage/
+    Sections/
+    LoginPage.tsx
+RegisterPage/
+    Sections/
+    RegisterPage.tsx
+UserDashboard/
+    Sections/
+    UserDashBoard.tsx
+AdminDashboard/
+    Sections/
+    AdminDashboard.tsx
+
