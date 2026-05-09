@@ -41,7 +41,7 @@
 /**
  * @typedef {Object} Alert
  * @property {string} alertId
- * @property {'geofence_breach'|'proximity_warning'|'stranded'|'insufficient_fuel'|'distress'} type
+ * @property {'geofence_breach'|'proximity_warning'|'stranded'|'insufficient_fuel'|'distress'|'captain_report'} type
  * @property {number} severity            - 1-5
  * @property {string} shipId
  * @property {string} message

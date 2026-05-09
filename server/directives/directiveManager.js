@@ -61,7 +61,7 @@ function acceptDirective(shipId, ship, zones, weatherCells) {
 
   if (directive.type === "hold_position") {
     updatedShip.status = "stopped";
-    updatedShip.currentPath = [];
+    // We preserve currentPath so the route still shows on the map.
   } else if (directive.type === "reroute_to_port" && directive.targetPortId) {
     const port = PORTS_MAP.get(directive.targetPortId);
     if (port) {

@@ -9,7 +9,7 @@ import { haversineKm } from "../simulator/physics.js";
 import { randomUUID } from "crypto";
 
 /** Proximity threshold in kilometres */
-const PROXIMITY_THRESHOLD_KM = 2;
+const PROXIMITY_THRESHOLD_KM = 0.5;
 
 /**
  * Active proximity pairs: key = `${shipA}-${shipB}` (sorted), value = alertId

@@ -12,6 +12,7 @@ import {
   ArrowRight,
   Activity,
   History,
+  Radio,
 } from "lucide-react";
 import { StatsCard } from "@/components/ui/stats-card";
 import { useFleetStore } from "@/store/fleetStore";
@@ -117,24 +118,41 @@ export default function DashboardHome() {
               </div>
             ) : (
               <ul className="divide-y divide-[var(--dashboard-border)]">
-                {alerts.filter(a => !a.acknowledged).sort((a, b) => b.timestamp - a.timestamp).slice(0, 4).map(alert => (
+                {alerts.filter(a => !a.acknowledged).sort((a, b) => b.timestamp - a.timestamp).slice(0, 4).map(alert => {
+                  const isCaptainReport = alert.type === "captain_report";
+                  const iconColor = isCaptainReport
+                    ? "text-blue-500"
+                    : alert.severity >= 4
+                    ? "text-red-500"
+                    : alert.severity === 3
+                    ? "text-amber-500"
+                    : "text-blue-500";
+                  const AlertIcon = isCaptainReport ? Radio : AlertTriangle;
+
+                  return (
                   <li key={alert.alertId} className="p-4 hover:bg-[var(--dashboard-card-hover)] transition-colors flex gap-3">
-                    <div className={`mt-1 flex-shrink-0 ${alert.severity >= 4 ? 'text-red-500' : alert.severity === 3 ? 'text-amber-500' : 'text-blue-500'}`}>
-                      <AlertTriangle size={18} />
+                    <div className={`mt-1 flex-shrink-0 ${iconColor}`}>
+                      <AlertIcon size={18} />
                     </div>
-                    <div>
-                      <p className="text-sm font-medium">{alert.message}</p>
-                      <div className="flex items-center gap-2 mt-1">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium leading-snug">{alert.message}</p>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
                         <span className="text-xs px-1.5 py-0.5 rounded bg-[var(--dashboard-bg)] text-[var(--dashboard-text-muted)] border border-[var(--dashboard-border)] font-mono">
                           {alert.shipId}
                         </span>
+                        {isCaptainReport && (
+                          <span className="text-xs px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20 font-medium">
+                            Captain Report
+                          </span>
+                        )}
                         <span className="text-xs text-[var(--dashboard-text-muted)]">
                           {new Date(alert.timestamp).toLocaleTimeString()}
                         </span>
                       </div>
                     </div>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             )}
           </div>

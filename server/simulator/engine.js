@@ -110,7 +110,10 @@ function _tick() {
     }
 
     const weatherPenalty = isAdverseAt(updated.position[0], updated.position[1]);
-    updated = advanceShip(updated, weatherPenalty);
+    updated.weatherPenaltyActive = weatherPenalty;
+    if (updated.isSimulating) {
+      updated = advanceShip(updated, weatherPenalty);
+    }
     _fleet.set(id, updated);
   }
 
@@ -276,6 +279,34 @@ async function _handleClientMessage(ws, msg) {
       break;
     }
 
+    case "captain_plot_course": {
+      if (ws.role !== "captain") return;
+      const ship = _fleet.get(ws.assignedShipId);
+      if (!ship) return;
+      
+      const newShip = { ...ship, routingStrategy: payload.strategy };
+      // Compute the route immediately using the new strategy
+      const routedShip = computeRoute(newShip, zoneStore.getAllZones(), getWeatherCells());
+      // Make sure simulation remains off until they explicitly start it
+      routedShip.isSimulating = false;
+      _fleet.set(ws.assignedShipId, routedShip);
+      
+      broadcast(_wss, "course_plotted", { shipId: ws.assignedShipId, path: routedShip.currentPath });
+      break;
+    }
+
+    case "captain_start_simulation": {
+      if (ws.role !== "captain") return;
+      const ship = _fleet.get(ws.assignedShipId);
+      if (!ship) return;
+      
+      const updatedShip = { ...ship, isSimulating: true };
+      _fleet.set(ws.assignedShipId, updatedShip);
+      
+      broadcast(_wss, "simulation_started", { shipId: ws.assignedShipId });
+      break;
+    }
+
     case "directive_escalate": {
       if (ws.role !== "captain") return;
       const directive = escalateDirective(ws.assignedShipId);
@@ -306,12 +337,87 @@ async function _handleClientMessage(ws, msg) {
       break;
     }
 
+    case "captain_report_alert": {
+      // Only authenticated captains can submit operational alerts
+      if (ws.role !== "captain") return;
+      if (!ws.assignedShipId) return;
+
+      const reportedSeverity = Number(payload.severity);
+      if (
+        !payload.message ||
+        typeof payload.message !== "string" ||
+        payload.message.trim().length === 0 ||
+        isNaN(reportedSeverity) ||
+        reportedSeverity < 1 ||
+        reportedSeverity > 5
+      ) {
+        return; // silently reject malformed payloads
+      }
+
+      const alertId = `alert-${randomUUID().slice(0, 8)}`;
+      _pushAlert({
+        alertId,
+        type: "captain_report",
+        severity: reportedSeverity,
+        shipId: ws.assignedShipId,
+        message: `[Captain Report] ${payload.message.trim()}`,
+        timestamp: Date.now(),
+        acknowledged: false,
+        relatedShipId: null,
+        aiParsed: null,
+      });
+
+      // Immediately broadcast the updated alert list so the admin dashboard
+      // reflects the new alert without waiting for the next 1Hz tick.
+      broadcast(_wss, "fleet_update", {
+        ships: getFleetArray(),
+        alerts: getAlertsArray(),
+        zones: zoneStore.getAllZones(),
+      });
+
+      // Echo back a confirmation to the reporting captain
+      ws.send(
+        JSON.stringify({
+          type: "captain_report_ack",
+          payload: { alertId },
+          ts: Date.now(),
+        })
+      );
+      break;
+    }
+
     case "alert_acknowledge": {
       if (ws.role !== "admin") return;
       const alert = _alerts.get(payload.alertId);
       if (alert) {
         _alerts.set(payload.alertId, { ...alert, acknowledged: true });
         broadcast(_wss, "alert_acknowledged", { alertId: payload.alertId });
+      }
+      break;
+    }
+
+    case "captain_plot_course": {
+      if (ws.role !== "captain" || !ws.assignedShipId) return;
+      const ship = _fleet.get(ws.assignedShipId);
+      if (ship) {
+        // Update strategy and re-compute route
+        ship.routingStrategy = payload.strategy || "optimized";
+        const rerouted = computeRoute(ship, zoneStore.getAllZones(), getWeatherCells());
+        _fleet.set(ws.assignedShipId, rerouted);
+      }
+      break;
+    }
+
+    case "captain_start_simulation": {
+      if (ws.role !== "captain" || !ws.assignedShipId) return;
+      const ship = _fleet.get(ws.assignedShipId);
+      if (ship) {
+        // Force status to normal to resume movement and clear stopped/stranded states
+        ship.status = "normal";
+        // Ensure we have a valid route to follow
+        const rerouted = computeRoute(ship, zoneStore.getAllZones(), getWeatherCells());
+        rerouted.status = "normal"; // computeRoute might set it back to stranded if it fails, but let's allow it to attempt
+        _fleet.set(ws.assignedShipId, rerouted);
       }
       break;
     }

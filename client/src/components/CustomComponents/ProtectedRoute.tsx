@@ -13,6 +13,11 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   }
 
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+    // If they are a captain and not allowed here, send them to captain view
+    if (user.role === 'captain') {
+      return <Navigate to="/captain" replace />
+    }
+    // Otherwise send to command center dashboard
     return <Navigate to="/dashboard" replace />
   }
 

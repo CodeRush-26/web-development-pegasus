@@ -55,7 +55,11 @@ export default function LoginPage() {
       toast.success("Login Successful", {
         description: "Welcome back!",
       });
-      navigate("/dashboard");
+      if (user.role === "captain") {
+        navigate("/captain");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error: any) {
       toast.error("Login Failed", {
         description: error.response?.data?.message || "Invalid credentials",
@@ -91,7 +95,11 @@ export default function LoginPage() {
       toast.success("Success", {
         description: "Successfully logged in with Google",
       });
-      navigate("/dashboard");
+      if (user.role === "captain") {
+        navigate("/captain");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error: any) {
       toast.error("Google Login Failed", {
         description:

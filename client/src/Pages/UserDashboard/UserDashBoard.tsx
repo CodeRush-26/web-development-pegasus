@@ -61,17 +61,6 @@ export default function UserDashboard() {
   // Filter links based on role
   const getSidebarLinks = () => {
     let links = [...sidebarLinks];
-    
-    // If Captain, replace Command Center with Captain View
-    if (user?.role === "captain") {
-      links = links.filter(l => l.path !== "/dashboard");
-      links.unshift({
-        title: "Captain View",
-        icon: Ship,
-        path: "/dashboard/captain",
-        exact: true,
-      });
-    }
 
     // If Admin, add Playback View
     if (user?.role === "admin") {

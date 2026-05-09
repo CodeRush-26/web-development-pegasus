@@ -20,6 +20,7 @@ export interface ShipState {
     | "out_of_fuel";
   weatherPenaltyActive: boolean;
   insufficientFuel: boolean;
+  isSimulating: boolean;
   currentPath: [number, number][]; // Remaining waypoints
   activeDirective: string | null;
 }
@@ -31,7 +32,8 @@ export interface Alert {
     | "proximity_warning"
     | "stranded"
     | "insufficient_fuel"
-    | "distress";
+    | "distress"
+    | "captain_report";
   severity: number; // 1-5
   shipId: string;
   message: string;

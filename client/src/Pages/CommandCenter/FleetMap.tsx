@@ -8,14 +8,20 @@ import { useMap } from "@vis.gl/react-google-maps";
 
 const MAP_ID = "FLEET_COMMAND_MAP_ID";
 
-/** Maps a ship's heading to a rotation angle for the marker icon */
 function ShipMarker({ ship, selected }: { ship: ShipState; selected: boolean }) {
   const isAdverse = ship.weatherPenaltyActive;
+  const { user } = useUserStore();
   
   // Status colors matching our design system
   let color = "#10b981"; // green (normal/arrived)
   if (ship.status === "rerouting") color = "#f59e0b"; // amber
   if (ship.status === "distressed" || ship.status === "stranded" || ship.status === "out_of_fuel") color = "#ef4444"; // red
+  if (ship.status === "stopped") color = "#6b7280"; // gray
+
+  // Override with purple if it's the captain's assigned ship
+  if (user?.role === "captain" && user?.assignedShipId === ship.shipId) {
+    color = "#8b5cf6"; // purple-500
+  }
   if (ship.status === "stopped") color = "#6b7280"; // gray
 
   return (
@@ -117,8 +123,8 @@ function ShipRoute({ ship, selected }: { ship: ShipState; selected: boolean }) {
       path,
       geodesic: true,
       strokeColor: ship.weatherPenaltyActive ? "#f59e0b" : "#3b82f6",
-      strokeOpacity: selected ? 0.8 : 0.3,
-      strokeWeight: selected ? 4 : 2,
+      strokeOpacity: selected ? 1.0 : 0.6,
+      strokeWeight: selected ? 4 : 3,
       map
     });
 

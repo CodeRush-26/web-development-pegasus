@@ -31,13 +31,19 @@ import OTPPage from "@/Pages/OTPPage/OTPPage";
 
 import ShipDetailPage from "@/Pages/CommandCenter/ShipDetailPage";
 
+import CaptainLayout from "@/Pages/CaptainView/CaptainLayout";
+
 // Styles
 import "./App.css";
 
 function App() {
   const location = useLocation();
   const { token, setUser, logout } = useUserStore();
-  const isDashboardRoute = location.pathname.startsWith("/dashboard");
+  const isCaptainRoute = location.pathname.startsWith("/captain");
+  const isDashboardRoute =
+    location.pathname.startsWith("/dashboard") ||
+    location.pathname.startsWith("/captain") ||
+    location.pathname.startsWith("/admin");
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -63,7 +69,7 @@ function App() {
 
   return (
     <>
-      <Navbar />
+      {!isCaptainRoute && <Navbar />}
       <SmoothScroll />
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -71,8 +77,8 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-otp" element={<OTPPage />} />
 
-        {/* Protected User & Captain Routes — all inside UserDashboard layout */}
-        <Route element={<ProtectedRoute />}>
+        {/* Protected User Routes — all inside UserDashboard layout */}
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/dashboard" element={<UserDashboard />}>
             {/* Default: Command Centre overview */}
             <Route index element={<DashboardHome />} />
@@ -88,15 +94,17 @@ function App() {
             <Route path="profile" element={<DashboardProfile />} />
             <Route path="settings" element={<DashboardSettings />} />
 
-            {/* Captain-only */}
-            <Route element={<ProtectedRoute allowedRoles={["captain"]} />}>
-              <Route path="captain" element={<CaptainView />} />
-            </Route>
-
             {/* Admin-only (inside layout so sidebar is visible) */}
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
               <Route path="playback" element={<PlaybackDashboard />} />
             </Route>
+          </Route>
+        </Route>
+
+        {/* Captain-only standalone layout */}
+        <Route element={<ProtectedRoute allowedRoles={["captain"]} />}>
+          <Route path="/captain" element={<CaptainLayout />}>
+            <Route index element={<CaptainView />} />
           </Route>
         </Route>
 
