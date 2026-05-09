@@ -1,9 +1,12 @@
+# Server-side redirect: Browser requests /api/* → Netlify redirects to HTTP backend
+# This avoids mixed content error since browser only sees HTTPS
 [[redirects]]
   from = "/api/*"
   to = "http://168.144.79.170/api/:splat"
   status = 200
   force = true
 
+# SPA fallback
 [[redirects]]
   from = "/*"
   to = "/index.html"
