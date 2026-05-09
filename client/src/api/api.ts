@@ -1,10 +1,10 @@
 import axios from "axios";
 import useUserStore from "@/store/userStore";
 
-// In production: use relative /api (Netlify redirects to HTTP backend)
+// In production: use root relative path (Netlify redirects /api/* to HTTP backend)
 // In dev: use direct HTTP backend URL
 const baseURL = import.meta.env.PROD
-  ? "/api"
+  ? ""
   : import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 const api = axios.create({
