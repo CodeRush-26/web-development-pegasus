@@ -17,7 +17,8 @@ export interface ShipState {
     | "stopped"
     | "stranded"
     | "arrived"
-    | "out_of_fuel";
+    | "out_of_fuel"
+    | "evacuating";
   weatherPenaltyActive: boolean;
   insufficientFuel: boolean;
   isSimulating: boolean;

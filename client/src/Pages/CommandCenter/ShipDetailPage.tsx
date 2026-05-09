@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Navigation, ShieldAlert, Gauge, Activity, Radio, AlertTriangle, Wind, Package } from "lucide-react";
 import { useFleetStore } from "@/store/fleetStore";
 import { useFleetSocket } from "@/hooks/useFleetSocket";
+import { MapPin } from "lucide-react";
 import { Map, AdvancedMarker, APIProvider, MapCameraChangedEvent } from "@vis.gl/react-google-maps";
 import { useState } from "react";
 
@@ -70,6 +71,12 @@ export default function ShipDetailPage() {
                 <p className="text-xs text-[var(--dashboard-text-muted)] mb-1 flex items-center gap-1"><Navigation size={14} /> Heading</p>
                 <p className="text-2xl font-mono font-medium">{Math.round(ship.heading)}°</p>
               </div>
+              <div className="p-4 bg-[var(--dashboard-bg)] rounded-lg border border-[var(--dashboard-border)] col-span-2">
+                <p className="text-xs text-[var(--dashboard-text-muted)] mb-1 flex items-center gap-1"><MapPin size={14} /> Position (Lat, Lng)</p>
+                <p className="text-lg font-mono font-medium">
+                  {ship.position[0].toFixed(6)}, {ship.position[1].toFixed(6)}
+                </p>
+              </div>
             </div>
 
             <div className="mt-4 p-4 bg-[var(--dashboard-bg)] rounded-lg border border-[var(--dashboard-border)]">
@@ -126,8 +133,8 @@ export default function ShipDetailPage() {
              <APIProvider apiKey={apiKey}>
                <Map
                  mapId="MINI_SHIP_MAP"
-                 defaultCenter={{ lat: ship.position[0], lng: ship.position[1] }}
-                 defaultZoom={11}
+                 center={{ lat: ship.position[0], lng: ship.position[1] }}
+                 zoom={12}
                  disableDefaultUI={true}
                  gestureHandling="cooperative"
                >

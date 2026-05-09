@@ -80,7 +80,7 @@ function acceptDirective(shipId, ship, zones, weatherCells) {
     const route = computeEscapeRoute(updatedShip, zones, weatherCells);
     if (route.path && route.path.length > 0) {
       updatedShip.currentPath = route.path;
-      updatedShip.status = "rerouting"; // moving to the escape point
+      updatedShip.status = "evacuating"; // moving to the escape point
     } else {
       updatedShip.status = "stopped"; // no escape found
     }

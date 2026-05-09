@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { APIProvider, Map, AdvancedMarker, useMap } from "@vis.gl/react-google-maps";
 import { usePlaybackStore } from "@/store/playbackStore";
 import { useSocketStore } from "@/store/socketStore";
+import { useFleetSocket } from "@/hooks/useFleetSocket";
 import { ShipState, Zone } from "@/types/fleet";
 import { TimelineScrubber } from "@/components/ui/timeline-scrubber";
 import { History, ShieldAlert } from "lucide-react";
@@ -73,6 +74,7 @@ function ZonePolygon({ zone }: { zone: Zone }) {
 }
 
 export default function PlaybackDashboard() {
+  useFleetSocket();
   const { currentSnapshot, clearPlayback } = usePlaybackStore();
   const { send } = useSocketStore();
   const [apiKey, setApiKey] = useState("");

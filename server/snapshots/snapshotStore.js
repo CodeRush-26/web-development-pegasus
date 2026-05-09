@@ -8,8 +8,8 @@
 /** Maximum number of snapshots to retain */
 const MAX_SNAPSHOTS = 120;
 
-/** Snapshot interval in simulator ticks (30 ticks = 30 seconds at 1 Hz) */
-const SNAPSHOT_INTERVAL_TICKS = 30;
+/** Snapshot interval in simulator ticks (5 ticks = 5 seconds at 1 Hz) */
+const SNAPSHOT_INTERVAL_TICKS = 5;
 
 /**
  * @typedef {Object} Snapshot
@@ -34,7 +34,8 @@ let _tickCount = 0;
  */
 function maybeSaveSnapshot(ships, alerts, zones) {
   _tickCount++;
-  if (_tickCount % SNAPSHOT_INTERVAL_TICKS !== 0) return;
+  // Save every SNAPSHOT_INTERVAL_TICKS, or the very first one
+  if (_tickCount % SNAPSHOT_INTERVAL_TICKS !== 0 && _ring.length > 0) return;
 
   const snapshot = {
     timestamp: Date.now(),

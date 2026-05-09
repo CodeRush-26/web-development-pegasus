@@ -75,11 +75,11 @@ export function DirectiveInbox({ directive, shipId }: DirectiveInboxProps) {
   };
 
   return (
-    <div className="bg-[var(--dashboard-card)] rounded-xl border border-amber-500/50 shadow-lg overflow-hidden relative">
+    <div className="bg-amber-50 rounded-xl border border-amber-500/50 shadow-lg overflow-hidden relative">
       <div className="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
       
-      <div className="p-4 border-b border-[var(--dashboard-border)] flex items-center justify-between bg-amber-500/5">
-        <h2 className="font-semibold flex items-center gap-2 text-amber-500">
+      <div className="p-4 border-b border-amber-200 flex items-center justify-between bg-amber-100">
+        <h2 className="font-semibold flex items-center gap-2 text-amber-800">
           <AlertCircle size={18} />
           Priority Directive Received
         </h2>
@@ -94,9 +94,9 @@ export function DirectiveInbox({ directive, shipId }: DirectiveInboxProps) {
             {renderIcon()}
           </div>
           <div>
-            <h3 className="font-medium text-lg capitalize">{directive.type.replace(/_/g, " ")}</h3>
-            <p className="text-[var(--dashboard-text-muted)] mt-1">{renderActionText()}</p>
-            <p className="text-xs text-[var(--dashboard-text-muted)] mt-2">
+            <h3 className="font-bold text-lg capitalize text-slate-900">{directive.type.replace(/_/g, " ")}</h3>
+            <p className="text-slate-800 font-medium mt-1">{renderActionText()}</p>
+            <p className="text-xs text-slate-500 mt-2">
               Issued at: {new Date(directive.issuedAt).toLocaleTimeString()}
             </p>
           </div>
