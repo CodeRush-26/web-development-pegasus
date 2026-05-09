@@ -2,24 +2,26 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Menu, X, ExternalLink, User, LogOut } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import useUserStore from "@/store/userStore";
 
 interface NavLink {
   name: string;
   href: string;
   isExternal?: boolean;
+  requiresAuth?: boolean;
 }
 
 const navLinks: NavLink[] = [
   { name: "Home", href: "/" },
-  { name: "Dashboard", href: "/dashboard" },
-  { name: "Fleet Map", href: "/dashboard" },
-  { name: "Directives", href: "/dashboard" },
+  { name: "Dashboard", href: "/dashboard", requiresAuth: true },
+  { name: "Fleet Map", href: "/dashboard/map", requiresAuth: true },
+  { name: "Directives", href: "/dashboard/directives", requiresAuth: true },
 ];
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useUserStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
@@ -151,36 +153,41 @@ export default function Navbar() {
 
             <div className="hidden md:block">
               <div className="flex items-center space-x-8">
-                {navLinks.map((link) =>
+                {navLinks
+                  .filter((link) => !link.requiresAuth || !!user)
+                  .map((link) =>
                   link.isExternal ? (
                     <a
                       key={link.name}
                       href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={cn(
-                        "flex items-center gap-1 text-sm font-medium transition-colors hover:text-[var(--foreground)]",
-                        activeSection === link.href.substring(1)
-                          ? "text-[var(--foreground)]"
-                          : "text-[var(--foreground-muted)]"
-                      )}
+                      className="flex items-center gap-1 text-sm font-medium transition-colors hover:text-[var(--foreground)] text-[var(--foreground-muted)]"
                     >
                       {link.name}
                       <ExternalLink className="h-3 w-3" />
                     </a>
-                  ) : (
+                  ) : link.href.startsWith("#") ? (
                     <button
                       key={link.name}
                       onClick={() => scrollToSection(link.href)}
+                      className="text-sm font-medium transition-colors hover:text-[var(--foreground)] text-[var(--foreground-muted)]"
+                    >
+                      {link.name}
+                    </button>
+                  ) : (
+                    <Link
+                      key={link.name}
+                      to={link.href}
                       className={cn(
                         "text-sm font-medium transition-colors hover:text-[var(--foreground)]",
-                        activeSection === link.href.substring(1)
+                        location.pathname === link.href
                           ? "text-[var(--foreground)]"
                           : "text-[var(--foreground-muted)]"
                       )}
                     >
                       {link.name}
-                    </button>
+                    </Link>
                   )
                 )}
               </div>
@@ -304,36 +311,42 @@ export default function Navbar() {
                 </div>
 
                 <nav className="flex flex-col space-y-6 mb-8">
-                  {navLinks.map((link) =>
+                  {navLinks
+                    .filter((link) => !link.requiresAuth || !!user)
+                    .map((link) =>
                     link.isExternal ? (
                       <a
                         key={link.name}
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={cn(
-                          "flex items-center gap-2 text-lg font-medium transition-colors hover:text-[var(--foreground)] py-2",
-                          activeSection === link.href.substring(1)
-                            ? "text-[var(--foreground)]"
-                            : "text-[var(--foreground-muted)]"
-                        )}
+                        className="flex items-center gap-2 text-lg font-medium transition-colors hover:text-[var(--foreground)] text-[var(--foreground-muted)] py-2"
                       >
                         {link.name}
                         <ExternalLink className="h-4 w-4" />
                       </a>
-                    ) : (
+                    ) : link.href.startsWith("#") ? (
                       <button
                         key={link.name}
-                        onClick={() => scrollToSection(link.href)}
+                        onClick={() => { scrollToSection(link.href); closeSidebar(); }}
+                        className="text-left text-lg font-medium transition-colors hover:text-[var(--foreground)] text-[var(--foreground-muted)] py-2"
+                      >
+                        {link.name}
+                      </button>
+                    ) : (
+                      <Link
+                        key={link.name}
+                        to={link.href}
+                        onClick={closeSidebar}
                         className={cn(
                           "text-left text-lg font-medium transition-colors hover:text-[var(--foreground)] py-2",
-                          activeSection === link.href.substring(1)
+                          location.pathname === link.href
                             ? "text-[var(--foreground)]"
                             : "text-[var(--foreground-muted)]"
                         )}
                       >
                         {link.name}
-                      </button>
+                      </Link>
                     )
                   )}
 

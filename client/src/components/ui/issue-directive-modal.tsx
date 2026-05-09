@@ -27,7 +27,7 @@ export function IssueDirectiveModal({ ship, onClose }: IssueDirectiveModalProps)
     }
 
     if (directiveType === "divert_to_waypoint") {
-      payload.targetWaypoint = [ship.location[0] + 0.1, ship.location[1] + 0.1]; // Just slightly offset for demo
+      payload.targetWaypoint = [ship.position[0] + 0.1, ship.position[1] + 0.1]; // Slightly ahead for demo
     }
 
     send("directive_send", payload);

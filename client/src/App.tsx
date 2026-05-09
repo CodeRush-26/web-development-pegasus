@@ -23,6 +23,8 @@ import DashboardSettings from "@/Pages/UserDashboard/DashboardSettings";
 import AdminDashboard from "@/Pages/AdminDashboard/AdminDashboard";
 import PlaybackDashboard from "@/Pages/AdminDashboard/PlaybackDashboard";
 import CaptainView from "@/Pages/CaptainView/CaptainView";
+import FleetMapPage from "@/Pages/CommandCenter/FleetMapPage";
+import DirectivesPage from "@/Pages/CommandCenter/DirectivesPage";
 import LoginPage from "@/Pages/LoginPage/LoginPage";
 import RegisterPage from "@/Pages/RegisterPage/RegisterPage";
 import OTPPage from "@/Pages/OTPPage/OTPPage";
@@ -63,24 +65,41 @@ function App() {
       <SmoothScroll />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        {/* <Route path="/" element={<HomePage />} /> */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-otp" element={<OTPPage />} />
 
+        {/* Protected User & Captain Routes — all inside UserDashboard layout */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<UserDashboard />}>
+            {/* Default: Command Centre overview */}
             <Route index element={<DashboardHome />} />
+
+            {/* Fleet Map — live map for everyone */}
+            <Route path="map" element={<FleetMapPage />} />
+
+            {/* Directives — available to all roles */}
+            <Route path="directives" element={<DirectivesPage />} />
+
+            {/* Profile & Settings — all users */}
             <Route path="profile" element={<DashboardProfile />} />
             <Route path="settings" element={<DashboardSettings />} />
-            <Route path="captain" element={<CaptainView />} />
+
+            {/* Captain-only */}
+            <Route element={<ProtectedRoute allowedRoles={["captain"]} />}>
+              <Route path="captain" element={<CaptainView />} />
+            </Route>
+
+            {/* Admin-only (inside layout so sidebar is visible) */}
+            <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+              <Route path="playback" element={<PlaybackDashboard />} />
+            </Route>
           </Route>
         </Route>
 
-        {/* Protected Admin Routes */}
+        {/* Admin-only top-level routes */}
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/dashboard/playback" element={<PlaybackDashboard />} />
         </Route>
 
         {/* Catch All */}
