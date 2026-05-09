@@ -263,7 +263,6 @@ export default function AdminDashboard() {
                           onChange={(e) => updateUserRole(user._id, e.target.value)}
                           className="bg-[var(--dashboard-bg)] border border-[var(--dashboard-border)] rounded text-sm p-1 focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
                         >
-                          <option value="user">User</option>
                           <option value="captain">Captain</option>
                           <option value="admin">Admin</option>
                         </select>

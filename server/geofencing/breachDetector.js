@@ -33,6 +33,9 @@ function detectBreaches(ships, zones) {
     const shipPoint = point([ship.position[1], ship.position[0]]); // turf uses [lng, lat]
 
     for (const zone of zones) {
+      if (zone.restrictedShipIds && zone.restrictedShipIds.length > 0 && !zone.restrictedShipIds.includes(ship.shipId)) {
+        continue;
+      }
       const key = `${ship.shipId}-${zone.zoneId}`;
 
       // Close the polygon ring if needed (turf requires first === last)
@@ -91,6 +94,9 @@ function checkNewZoneAgainstFleet(ships, zone) {
   const zonePolygon = polygon([coords]);
 
   for (const ship of ships) {
+    if (zone.restrictedShipIds && zone.restrictedShipIds.length > 0 && !zone.restrictedShipIds.includes(ship.shipId)) {
+      continue;
+    }
     if (ship.status === "arrived" || ship.status === "out_of_fuel") continue;
     const shipPoint = point([ship.position[1], ship.position[0]]);
     if (booleanPointInPolygon(shipPoint, zonePolygon)) {

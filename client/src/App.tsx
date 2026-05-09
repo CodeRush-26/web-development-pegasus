@@ -28,6 +28,8 @@ import DirectivesPage from "@/Pages/CommandCenter/DirectivesPage";
 import LoginPage from "@/Pages/LoginPage/LoginPage";
 import RegisterPage from "@/Pages/RegisterPage/RegisterPage";
 import OTPPage from "@/Pages/OTPPage/OTPPage";
+import ForgotPasswordPage from "@/Pages/ForgotPasswordPage/ForgotPasswordPage";
+import ResetPasswordPage from "@/Pages/ResetPasswordPage/ResetPasswordPage";
 
 import ShipDetailPage from "@/Pages/CommandCenter/ShipDetailPage";
 
@@ -76,6 +78,8 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-otp" element={<OTPPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         {/* Protected User Routes — all inside UserDashboard layout */}
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>

@@ -1,4 +1,5 @@
 import Invite from "../models/Invite.js";
+import { sendInviteEmail } from "../services/emailService.js";
 
 // Create a new invite - Admin only
 export const createInvite = async (req, res) => {
@@ -24,6 +25,10 @@ export const createInvite = async (req, res) => {
     });
 
     await invite.save();
+
+    // Send invitation email
+    const inviteLink = `${process.env.CLIENT_URL || "http://localhost:5173"}/register?email=${encodeURIComponent(invite.email)}`;
+    await sendInviteEmail(invite.email, invite.role, inviteLink);
 
     res.status(201).json(invite);
   } catch (error) {

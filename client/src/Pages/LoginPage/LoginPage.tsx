@@ -147,7 +147,10 @@ export default function LoginPage() {
         transition={{ duration: 0.6 }}
       >
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-3 font-bold text-lg group">
+          <Link
+            to="/"
+            className="flex items-center gap-3 font-bold text-lg group"
+          >
             <motion.div
               className="w-8 h-8 bg-[var(--primary)] rounded-lg flex items-center justify-center"
               whileHover={{ scale: 1.1 }}
@@ -236,10 +239,7 @@ export default function LoginPage() {
                   >
                     Email Address
                   </label>
-                  <motion.div
-                    className="relative"
-                    whileFocus={{ scale: 1.02 }}
-                  >
+                  <motion.div className="relative" whileFocus={{ scale: 1.02 }}>
                     <Mail className="absolute left-4 top-4 w-5 h-5 text-[var(--muted-foreground)]" />
                     <motion.input
                       id="email"
@@ -270,16 +270,14 @@ export default function LoginPage() {
                     </label>
                     <motion.button
                       type="button"
+                      onClick={() => navigate("/forgot-password")}
                       className="text-sm text-[var(--primary)] hover:underline"
                       whileHover={{ scale: 1.05 }}
                     >
                       Forgot?
                     </motion.button>
                   </div>
-                  <motion.div
-                    className="relative"
-                    whileFocus={{ scale: 1.02 }}
-                  >
+                  <motion.div className="relative" whileFocus={{ scale: 1.02 }}>
                     <Lock className="absolute left-4 top-4 w-5 h-5 text-[var(--muted-foreground)]" />
                     <motion.input
                       id="password"
@@ -318,7 +316,10 @@ export default function LoginPage() {
                   ) : (
                     <>
                       Sign in
-                      <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+                      <motion.span
+                        animate={{ x: [0, 5, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
                         <ArrowRight className="w-5 h-5" />
                       </motion.span>
                     </>

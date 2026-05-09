@@ -24,7 +24,7 @@ export function InviteManager() {
   const { ships } = useFleetStore();
 
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("user");
+  const [role, setRole] = useState("captain");
   const [assignedShipId, setAssignedShipId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -57,7 +57,7 @@ export function InviteManager() {
       });
       toast.success("Invite created successfully");
       setEmail("");
-      setRole("user");
+      setRole("captain");
       setAssignedShipId("");
       fetchInvites();
     } catch (error: any) {
@@ -111,8 +111,6 @@ export function InviteManager() {
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 className="w-full bg-[var(--dashboard-bg)] border border-[var(--dashboard-border)] rounded-md py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-[var(--primary)] appearance-none"
-              >
-                <option value="user">Observer (User)</option>
                 <option value="captain">Captain</option>
                 <option value="admin">Administrator</option>
               </select>

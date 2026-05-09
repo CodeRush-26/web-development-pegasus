@@ -224,6 +224,11 @@ async function _handleClientMessage(ws, msg) {
       for (const alert of breachAlerts) _pushAlert(alert);
       // Re-route ships whose paths intersect the new zone
       for (const [id, ship] of _fleet) {
+        // Skip if this zone doesn't apply to this ship
+        if (zone.restrictedShipIds && zone.restrictedShipIds.length > 0 && !zone.restrictedShipIds.includes(ship.shipId)) {
+          continue;
+        }
+
         if (pathIntersectsZone(ship.currentPath, zone)) {
           const rerouted = { ...computeRoute(ship, zoneStore.getAllZones(), getWeatherCells()), status: "rerouting" };
           _fleet.set(id, rerouted);

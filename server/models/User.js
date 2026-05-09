@@ -35,6 +35,10 @@ const userSchema = new mongoose.Schema(
       code: String,
       expiresAt: Date,
     },
+    passwordReset: {
+      token: String,
+      expiresAt: Date,
+    },
     profilePicture: String,
     role: {
       type: String,
@@ -49,7 +53,7 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Hash password before saving
