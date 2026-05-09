@@ -27,6 +27,7 @@ interface UserData {
   isVerified: boolean;
   onBoardingComplete: boolean;
   profilePicture?: string;
+  role: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -38,6 +39,7 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<"users" | "invites">("users");
+  const { user } = useUserStore();
 
   // Fetch all users
   const fetchUsers = async () => {
@@ -69,16 +71,30 @@ export default function AdminDashboard() {
     }
   };
 
+  // Update user role
+  const updateUserRole = async (id: string, role: string) => {
+    try {
+      await api.put(`/api/users/${id}/role`, { role });
+      toast.success("Role updated successfully");
+      fetchUsers();
+    } catch (error: any) {
+      toast.error("Error", {
+        description: error.response?.data?.message || "Failed to update role",
+      });
+    }
+  };
+
   useEffect(() => {
     // Fetch users on component mount
     fetchUsers();
   }, []);
 
-  // Filter users based on search term
+  // Filter users based on search term and exclude self
   const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    (u) =>
+      u._id !== user?.id &&
+      (u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.email.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   // Format date
@@ -161,7 +177,7 @@ export default function AdminDashboard() {
                   <th className="px-4 py-3 text-left">Email</th>
                   <th className="px-4 py-3 text-left">Joined</th>
                   <th className="px-4 py-3 text-left">Status</th>
-                  <th className="px-4 py-3 text-left">Auth</th>
+                  <th className="px-4 py-3 text-left">Role</th>
                   <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
               </thead>
@@ -242,22 +258,20 @@ export default function AdminDashboard() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex items-center">
-                          {user.isGoogle ? (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                              Google
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                              Email
-                            </span>
-                          )}
-                        </div>
+                        <select
+                          value={user.role || "user"}
+                          onChange={(e) => updateUserRole(user._id, e.target.value)}
+                          className="bg-[var(--dashboard-bg)] border border-[var(--dashboard-border)] rounded text-sm p-1 focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                        >
+                          <option value="user">User</option>
+                          <option value="captain">Captain</option>
+                          <option value="admin">Admin</option>
+                        </select>
                       </td>
                       <td className="px-4 py-3">
                         <button
                           onClick={() => deleteUser(user._id)}
-                          className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-md transition-colors"
+                          className="p-1.5 bg-red-500/10 text-red-500 rounded hover:bg-red-500/20 transition-colors"
                           title="Delete User"
                         >
                           <Trash2 size={16} />

@@ -93,10 +93,10 @@ function computeRoute(ship, zones, weatherCells = []) {
   let path = findPath(ship.position, destPort.position, nodes, meta);
 
   if (!path || path.length === 0) {
-    // Fallback: route along the navigable water polygon boundary
-    // This guarantees the path stays in water and avoids cutting through land
-    path = routeAlongPolygon(ship.position, destPort.position, NAVIGABLE_POLYGON);
-    console.log(`[Route] ${ship.shipId}: A* failed, using polygon-edge fallback (${path.length} waypoints)`);
+    // Fallback: Hold Position. We do not use routeAlongPolygon because it ignores red zones.
+    path = [ship.position];
+    ship.status = "holding";
+    console.log(`[Route] ${ship.shipId}: A* failed (likely blocked by zone), holding position.`);
   } else {
     console.log(`[Route] ${ship.shipId}: A* found path (${path.length} waypoints)`);
   }

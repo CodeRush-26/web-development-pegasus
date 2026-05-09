@@ -11,7 +11,7 @@ import { useFleetStore } from "@/store/fleetStore";
 import useUserStore from "@/store/userStore";
 import { useFleetSocket } from "@/hooks/useFleetSocket";
 import FleetMap from "../CommandCenter/FleetMap";
-import { DirectiveInbox } from "./DirectiveInbox";
+import { NotificationCenter } from "@/components/NotificationCenter";
 import {
   Ship,
   Navigation,
@@ -341,36 +341,9 @@ export default function CaptainView() {
             </div>
           </div>
 
-          {/* Right column — Directive Inbox & Alerts */}
-          <div className="w-full md:w-96 pointer-events-auto flex flex-col gap-3">
-            {/* Alerts Window */}
-            {myAlerts.length > 0 && (
-              <div className="bg-black/70 backdrop-blur-lg border border-red-500/30 rounded-xl p-4 shadow-[0_0_20px_rgba(220,38,38,0.2)] animate-in slide-in-from-right duration-300">
-                <div className="flex items-center gap-2 mb-3 border-b border-red-500/20 pb-2">
-                  <AlertTriangle size={16} className="text-red-400" />
-                  <h3 className="text-red-400 font-bold uppercase tracking-widest text-xs font-mono">
-                    System Alerts ({myAlerts.length})
-                  </h3>
-                </div>
-                <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
-                  {myAlerts.map((alert) => (
-                    <div
-                      key={alert.alertId}
-                      className="bg-red-500/10 border border-red-500/20 rounded p-2.5"
-                    >
-                      <p className="text-white text-xs leading-relaxed">
-                        {alert.message}
-                      </p>
-                      <span className="text-[10px] text-red-300/60 font-mono block mt-1.5">
-                        {new Date(alert.timestamp).toLocaleTimeString()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <DirectiveInbox directive={activeDirective} shipId={myShip.shipId} />
+          {/* Right column — Notification Center */}
+          <div className="w-full md:w-96 pointer-events-auto max-h-[80vh] flex">
+            <NotificationCenter assignedShipId={myShip.shipId} />
           </div>
         </div>
       </div>

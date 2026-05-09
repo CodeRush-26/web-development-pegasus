@@ -124,3 +124,37 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// Update user role (Admin only)
+export const updateUserRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+    
+    if (!["admin", "captain", "user"].includes(role)) {
+      return res.status(400).json({ message: "Invalid role specified" });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Prevent changing own role
+    if (user._id.toString() === req.user._id.toString()) {
+      return res.status(400).json({ message: "Cannot change your own role" });
+    }
+
+    user.role = role;
+    const updatedUser = await user.save();
+
+    res.json({
+      id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+    });
+  } catch (error) {
+    console.error("Update role error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

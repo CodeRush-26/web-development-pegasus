@@ -1,17 +1,20 @@
 import { useState, useEffect } from "react";
 import { useMap, AdvancedMarker } from "@vis.gl/react-google-maps";
-import { Plus, X, Check, Hexagon } from "lucide-react";
+import { Plus, X, Check, Hexagon, Trash2 } from "lucide-react";
 import { useSocketStore } from "@/store/socketStore";
+import { useFleetStore } from "@/store/fleetStore";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 export function ZoneDrawer() {
   const map = useMap();
   const { send } = useSocketStore();
+  const { zones } = useFleetStore();
   const [isDrawing, setIsDrawing] = useState(false);
   const [vertices, setVertices] = useState<[number, number][]>([]);
   const [zoneName, setZoneName] = useState("");
   const [showNameDialog, setShowNameDialog] = useState(false);
+  const [showZoneList, setShowZoneList] = useState(false);
 
   // We add a click listener to the map when drawing mode is active
   useEffect(() => {
@@ -59,20 +62,34 @@ export function ZoneDrawer() {
     handleCancel();
   };
 
+  const handleDeleteZone = (zoneId: string) => {
+    if (!window.confirm("Are you sure you want to remove this restricted zone?")) return;
+    send("zone_delete", { zoneId });
+  };
+
   return (
     <>
       {/* Floating Toolbar */}
-      <div className="absolute top-4 left-4 z-[100] bg-[var(--dashboard-card)] rounded-lg shadow-lg border border-[var(--dashboard-border)] overflow-hidden">
-        {!isDrawing ? (
-          <button
-            onClick={() => setIsDrawing(true)}
-            className="flex items-center gap-2 px-4 py-2 hover:bg-[var(--dashboard-card-hover)] transition-colors text-sm font-medium"
-            title="Draw Restricted Zone"
-          >
-            <Hexagon size={16} className="text-red-500" />
-            Add Restricted Zone
-          </button>
-        ) : (
+      <div className="absolute top-4 left-4 z-[100] flex flex-col gap-2">
+        <div className="bg-[var(--dashboard-card)] rounded-lg shadow-lg border border-[var(--dashboard-border)] overflow-hidden">
+          {!isDrawing ? (
+            <div className="flex">
+              <button
+                onClick={() => setIsDrawing(true)}
+                className="flex items-center gap-2 px-4 py-2 hover:bg-[var(--dashboard-card-hover)] transition-colors text-sm font-medium border-r border-[var(--dashboard-border)]"
+                title="Draw Restricted Zone"
+              >
+                <Hexagon size={16} className="text-red-500" />
+                Add Restricted Zone
+              </button>
+              <button
+                onClick={() => setShowZoneList(!showZoneList)}
+                className={`px-4 py-2 hover:bg-[var(--dashboard-card-hover)] transition-colors text-sm font-medium ${showZoneList ? 'bg-[var(--dashboard-card-hover)]' : ''}`}
+              >
+                Manage Zones ({zones.length})
+              </button>
+            </div>
+          ) : (
           <div className="flex items-center">
             <div className="px-4 py-2 bg-red-500/10 text-red-500 text-sm font-medium border-r border-[var(--dashboard-border)]">
               Drawing Mode Active: Click map to add points
@@ -92,6 +109,31 @@ export function ZoneDrawer() {
             >
               <X size={18} />
             </button>
+          </div>
+        </div>
+
+        {/* Active Zones List */}
+        {showZoneList && !isDrawing && (
+          <div className="bg-[var(--dashboard-card)] rounded-lg shadow-lg border border-[var(--dashboard-border)] p-3 w-80 max-h-64 overflow-y-auto animate-in slide-in-from-top-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--dashboard-text-muted)] mb-2">Active Restricted Zones</h4>
+            {zones.length === 0 ? (
+              <p className="text-sm text-[var(--dashboard-text-muted)]">No active zones.</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {zones.map((zone) => (
+                  <div key={zone.zoneId} className="flex items-center justify-between bg-[var(--dashboard-bg)] border border-[var(--dashboard-border)] p-2 rounded">
+                    <span className="text-sm font-medium truncate max-w-[200px]">{zone.name}</span>
+                    <button
+                      onClick={() => handleDeleteZone(zone.zoneId)}
+                      className="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded transition-colors"
+                      title="Remove Zone"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

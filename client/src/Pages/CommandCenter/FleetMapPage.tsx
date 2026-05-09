@@ -9,6 +9,7 @@ import { useFleetStore } from "@/store/fleetStore";
 import { ZoneDrawer } from "./ZoneDrawer";
 import useUserStore from "@/store/userStore";
 import { MapPin, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { NotificationCenter } from "@/components/NotificationCenter";
 
 export default function FleetMapPage() {
   // Connect to live fleet data
@@ -47,9 +48,17 @@ export default function FleetMapPage() {
         )}
       </div>
 
-      {/* Map — takes remaining height */}
-      <div className="flex-1 min-h-[500px] rounded-xl border border-[var(--dashboard-border)] overflow-hidden">
-        <FleetMap />
+      {/* Map and Notification Split */}
+      <div className="flex-1 flex flex-col lg:flex-row gap-4 min-h-[500px]">
+        {/* Map */}
+        <div className="flex-1 rounded-xl border border-[var(--dashboard-border)] overflow-hidden relative">
+          <FleetMap />
+        </div>
+
+        {/* Unified Notifications Sidebar */}
+        <div className="w-full lg:w-96 rounded-xl border border-[var(--dashboard-border)] bg-[var(--dashboard-card)] p-4 overflow-hidden flex flex-col">
+          <NotificationCenter />
+        </div>
       </div>
 
       {/* Admin hint */}
