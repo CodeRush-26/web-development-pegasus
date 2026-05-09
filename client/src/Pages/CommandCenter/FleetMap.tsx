@@ -22,7 +22,6 @@ function ShipMarker({ ship, selected }: { ship: ShipState; selected: boolean }) 
   if (user?.role === "captain" && user?.assignedShipId === ship.shipId) {
     color = "#8b5cf6"; // purple-500
   }
-  if (ship.status === "stopped") color = "#6b7280"; // gray
 
   return (
     <AdvancedMarker

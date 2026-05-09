@@ -12,6 +12,15 @@ interface SocketState {
   send: (type: string, payload: any) => void;
 }
 
+/** Reconnect delay bounds */
+const RECONNECT_BASE_MS = 1000;
+const RECONNECT_MAX_MS = 10000;
+
+let _reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+let _reconnectAttempt = 0;
+let _lastToken: string | null = null;
+let _intentionalClose = false;
+
 export const useSocketStore = create<SocketState>((set, get) => ({
   ws: null,
   isConnected: false,
@@ -19,9 +28,12 @@ export const useSocketStore = create<SocketState>((set, get) => ({
   error: null,
 
   connect: (token: string) => {
-    const { ws, isConnecting, isConnected } = get();
-    if (ws || isConnecting || isConnected) return;
+    const { ws, isConnecting } = get();
+    // If already connected or connecting with an active socket, skip
+    if ((ws && ws.readyState <= WebSocket.OPEN) || isConnecting) return;
 
+    _lastToken = token;
+    _intentionalClose = false;
     set({ isConnecting: true, error: null });
 
     // Use WSS (WebSocket Secure) in production, WS in development
@@ -40,12 +52,27 @@ export const useSocketStore = create<SocketState>((set, get) => ({
 
     newWs.onopen = () => {
       console.log("[WS] Connected");
+      _reconnectAttempt = 0; // Reset backoff on success
       set({ ws: newWs, isConnected: true, isConnecting: false, error: null });
     };
 
     newWs.onclose = (event) => {
       console.log("[WS] Disconnected:", event.code, event.reason);
       set({ ws: null, isConnected: false, isConnecting: false });
+
+      // Auto-reconnect unless we intentionally called disconnect()
+      if (!_intentionalClose && _lastToken) {
+        const delay = Math.min(
+          RECONNECT_BASE_MS * Math.pow(2, _reconnectAttempt),
+          RECONNECT_MAX_MS
+        );
+        _reconnectAttempt++;
+        console.log(`[WS] Reconnecting in ${delay}ms (attempt ${_reconnectAttempt})...`);
+        if (_reconnectTimer) clearTimeout(_reconnectTimer);
+        _reconnectTimer = setTimeout(() => {
+          get().connect(_lastToken!);
+        }, delay);
+      }
     };
 
     newWs.onerror = (error) => {
@@ -57,6 +84,11 @@ export const useSocketStore = create<SocketState>((set, get) => ({
   },
 
   disconnect: () => {
+    _intentionalClose = true;
+    if (_reconnectTimer) {
+      clearTimeout(_reconnectTimer);
+      _reconnectTimer = null;
+    }
     const { ws } = get();
     if (ws) {
       ws.close();
@@ -66,7 +98,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
 
   send: (type: string, payload: any) => {
     const { ws, isConnected } = get();
-    if (ws && isConnected) {
+    if (ws && isConnected && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({ type, payload }));
     } else {
       console.warn(`[WS] Cannot send ${type} — socket disconnected`);

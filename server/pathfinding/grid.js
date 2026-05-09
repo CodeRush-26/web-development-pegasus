@@ -9,7 +9,7 @@
 import { point, polygon, booleanPointInPolygon } from "@turf/turf";
 
 /** Grid spacing in degrees (approx 10-12 km per cell at this latitude) */
-const GRID_STEP = 0.15;
+const GRID_STEP = 0.1;
 
 /** Cost multiplier for grid cells with adverse weather */
 const WEATHER_COST_MULTIPLIER = 1.5;

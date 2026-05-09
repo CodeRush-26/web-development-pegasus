@@ -36,7 +36,7 @@ function buildShipState(raw) {
     insufficientFuel: false,
     currentPath: [],   // Populated by routeManager on first tick
     activeDirective: null,
-    isSimulating: false, // Paused by default until Captain engages
+    isSimulating: true, // Ships are in transit from the start per spec
     routingStrategy: 'optimized', // 'fastest' | 'fuel_efficient' | 'optimized'
   };
 }

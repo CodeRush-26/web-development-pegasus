@@ -8,7 +8,7 @@
 import { fetchWeatherGrid } from "./openMeteoClient.js";
 
 /** Refresh interval in milliseconds (30 minutes) */
-const REFRESH_INTERVAL_MS = 30 * 60 * 1000;
+const REFRESH_INTERVAL_MS = 3 * 60 * 1000;
 
 /** @type {import('../types/fleet.js').WeatherCell[]} */
 let _cachedCells = [];

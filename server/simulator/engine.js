@@ -207,9 +207,10 @@ function startSimulator(wss) {
  * @param {{ type: string, payload: any }} msg
  */
 async function _handleClientMessage(ws, msg) {
-  const { type, payload } = msg;
+  try {
+    const { type, payload } = msg;
 
-  switch (type) {
+    switch (type) {
     case "zone_create": {
       if (ws.role !== "admin") return;
       const zone = zoneStore.addZone({
@@ -397,18 +398,21 @@ async function _handleClientMessage(ws, msg) {
     }
 
     case "captain_plot_course": {
+      console.log(`[Simulator] captain_plot_course received for ${ws.assignedShipId} with strategy ${payload.strategy}`);
       if (ws.role !== "captain" || !ws.assignedShipId) return;
       const ship = _fleet.get(ws.assignedShipId);
       if (ship) {
         // Update strategy and re-compute route
         ship.routingStrategy = payload.strategy || "optimized";
         const rerouted = computeRoute(ship, zoneStore.getAllZones(), getWeatherCells());
+        console.log(`[Simulator] ${ws.assignedShipId} course plotted. New path length: ${rerouted.currentPath.length}, status: ${rerouted.status}`);
         _fleet.set(ws.assignedShipId, rerouted);
       }
       break;
     }
 
     case "captain_start_simulation": {
+      console.log(`[Simulator] captain_start_simulation received for ${ws.assignedShipId}`);
       if (ws.role !== "captain" || !ws.assignedShipId) return;
       const ship = _fleet.get(ws.assignedShipId);
       if (ship) {
@@ -417,6 +421,8 @@ async function _handleClientMessage(ws, msg) {
         // Ensure we have a valid route to follow
         const rerouted = computeRoute(ship, zoneStore.getAllZones(), getWeatherCells());
         rerouted.status = "normal"; // computeRoute might set it back to stranded if it fails, but let's allow it to attempt
+        rerouted.isSimulating = true; // IMPORTANT: flag so physics engine actually advances the ship!
+        console.log(`[Simulator] ${ws.assignedShipId} simulation started. Path length: ${rerouted.currentPath.length}, status: ${rerouted.status}, isSimulating: ${rerouted.isSimulating}`);
         _fleet.set(ws.assignedShipId, rerouted);
       }
       break;
@@ -483,8 +489,11 @@ async function _handleClientMessage(ws, msg) {
       break;
     }
 
-    default:
-      console.warn("[Simulator] Unknown message type:", type);
+      default:
+        console.warn("[Simulator] Unknown message type:", type);
+    }
+  } catch (err) {
+    console.error("[Simulator] Error handling client message:", err);
   }
 }
 
