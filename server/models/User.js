@@ -38,8 +38,13 @@ const userSchema = new mongoose.Schema(
     profilePicture: String,
     role: {
       type: String,
-      enum: ["user", "admin"],
+      enum: ["user", "admin", "captain"],
       default: "user",
+    },
+    /** For captains: which ship they are assigned to (e.g. "MV-7") */
+    assignedShipId: {
+      type: String,
+      default: null,
     },
   },
   {

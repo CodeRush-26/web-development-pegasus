@@ -98,10 +98,12 @@ export const login = async (req, res) => {
       }
     }
 
-    // Generate JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '7d'
-    })
+    // Generate JWT token — include id, role, assignedShipId for WS auth
+    const token = jwt.sign(
+      { id: user._id, userId: user._id, role: user.role, assignedShipId: user.assignedShipId ?? null },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    )
 
     res.json({
       token,
@@ -111,6 +113,7 @@ export const login = async (req, res) => {
         email: user.email,
         isGoogle: user.isGoogle,
         role: user.role,
+        assignedShipId: user.assignedShipId ?? null,
         onBoardingComplete: user.onBoardingComplete,
         profilePicture: user.profilePicture
       }
@@ -174,10 +177,12 @@ export const googleAuth = async (req, res) => {
       await user.save()
     }
 
-    // Generate JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '7d'
-    })
+    // Generate JWT token — include id, role, assignedShipId for WS auth
+    const token = jwt.sign(
+      { id: user._id, userId: user._id, role: user.role, assignedShipId: user.assignedShipId ?? null },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    )
 
     res.json({
       token,
@@ -187,6 +192,7 @@ export const googleAuth = async (req, res) => {
         email: user.email,
         isGoogle: user.isGoogle,
         role: user.role,
+        assignedShipId: user.assignedShipId ?? null,
         onBoardingComplete: user.onBoardingComplete,
         profilePicture: user.profilePicture
       }
