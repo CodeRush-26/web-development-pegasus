@@ -1,34 +1,24 @@
 import { useState, useEffect } from "react";
 import useUserStore from "@/store/userStore";
 import {
+  Ship,
+  AlertTriangle,
+  Wind,
+  Map as MapIcon,
+  ShieldAlert,
   ArrowRight,
-  Users,
-  Gamepad2,
-  Trophy,
-  Clock,
   Activity,
-  TrendingUp,
-  Flame,
-  Zap,
+  History,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTheme } from "@/lib/theme-provider";
 import { StatsCard } from "@/components/ui/stats-card";
-import { MagicCard } from "@/components/ui/magic-card";
-import { Marquee } from "@/components/ui/marquee";
-
-// Data will be fetched from API in production
-const recentGames = [];
-const recentAchievements = [];
-const friendsActivity = [];
 
 export default function DashboardHome() {
   const { user } = useUserStore();
-  const { theme } = useTheme();
   const [greeting, setGreeting] = useState("");
 
   useEffect(() => {
-    // Set greeting based on time of day
     const hour = new Date().getHours();
     if (hour < 12) setGreeting("Good morning");
     else if (hour < 18) setGreeting("Good afternoon");
@@ -36,239 +26,137 @@ export default function DashboardHome() {
   }, []);
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
-          <Gamepad2 className="text-[var(--gaming-purple)]" />
-          {greeting}, {user?.name}
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold mb-2 flex items-center gap-2 text-[var(--foreground)]">
+          <ShieldAlert className="text-[var(--primary)]" />
+          {greeting}, Commander {user?.name.split(' ')[0]}
         </h1>
         <p className="text-[var(--dashboard-text-muted)]">
-          Welcome to your gaming dashboard. Here's what's happening.
+          Fleet Status: <span className="text-green-500 font-medium">Operational</span> • 15 ships tracked in the Strait of Hormuz.
         </p>
       </div>
 
-      {/* Recent Achievements Marquee */}
-      {recentAchievements.length > 0 && (
-        <div className="mb-6 overflow-hidden">
-          <Marquee speed={30} className="py-2">
-            {recentAchievements.map((achievement) => (
-              <div
-                key={achievement.id}
-                className="flex items-center gap-1 sm:gap-2 mx-2 sm:mx-4 px-2 sm:px-3 py-1.5 bg-[var(--dashboard-card-hover)]/50 rounded-full"
-              >
-                <div className="p-1 rounded-full text-[var(--gaming-purple)] flex-shrink-0">
-                  <Trophy size={14} />
-                </div>
-                <span className="font-medium whitespace-nowrap text-xs sm:text-sm">
-                  {achievement.title}
-                </span>
-                <span className="text-xs text-[var(--dashboard-text-muted)] whitespace-nowrap hidden xs:inline">
-                  • {achievement.game}
-                </span>
-              </div>
-            ))}
-          </Marquee>
-        </div>
-      )}
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatsCard
+          title="Active Ships"
+          value="15"
+          icon={<Ship size={20} className="text-[var(--primary)]" />}
+          iconClassName="bg-[var(--primary)]/10"
+        />
+        <StatsCard
+          title="Critical Alerts"
+          value="0"
+          icon={<AlertTriangle size={20} className="text-red-500" />}
+          iconClassName="bg-red-500/10"
+        />
+        <StatsCard
+          title="Adverse Weather"
+          value="2"
+          icon={<Wind size={20} className="text-amber-500" />}
+          iconClassName="bg-amber-500/10"
+        />
+        <StatsCard
+          title="System Latency"
+          value="342ms"
+          icon={<Activity size={20} className="text-green-500" />}
+          iconClassName="bg-green-500/10"
+        />
+      </div>
 
-      {/* Dashboard Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
-        {/* Gaming Stats */}
-        <div className="space-y-4 sm:space-y-6 order-1">
-          <StatsCard
-            title="Games Played"
-            value="0"
-            icon={
-              <Gamepad2 size={18} className="text-[var(--gaming-purple)]" />
-            }
-            iconClassName="bg-[var(--gaming-purple-light)]/20 text-[var(--gaming-purple)]"
-          />
-
-          <StatsCard
-            title="Total Hours"
-            value="0"
-            icon={<Clock size={18} className="text-[var(--gaming-blue)]" />}
-            iconClassName="bg-[var(--gaming-blue-light)]/20 text-[var(--gaming-blue)]"
-          />
-
-          <div className="mt-4">
-            <Link
-              to="/dashboard/games"
-              className="text-[var(--gaming-purple)] text-sm flex items-center hover:underline"
-            >
-              View all games
-              <ArrowRight size={14} className="ml-1" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Fleet Overview Map Placeholder */}
+        <div className="lg:col-span-2 bg-[var(--dashboard-card)] rounded-xl border border-[var(--dashboard-border)] overflow-hidden flex flex-col h-[400px]">
+          <div className="p-4 border-b border-[var(--dashboard-border)] flex items-center justify-between">
+            <h2 className="font-semibold flex items-center gap-2">
+              <MapIcon size={18} className="text-[var(--primary)]" />
+              Live Fleet Position
+            </h2>
+            <Link to="/dashboard" className="text-xs text-[var(--primary)] hover:underline flex items-center gap-1">
+              Full Map <ArrowRight size={12} />
             </Link>
           </div>
-        </div>
-
-        {/* Recent Achievements */}
-        <div className="bg-[var(--dashboard-card)] rounded-xl p-4 sm:p-6 border border-[var(--dashboard-border)] order-2">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold">Recent Achievements</h2>
-            <div className="p-2 bg-[var(--gaming-purple-light)]/20 text-[var(--gaming-purple)] rounded-lg">
-              <Trophy size={18} />
-            </div>
-          </div>
-          <div className="space-y-3">
-            {recentAchievements.length > 0 ? (
-              recentAchievements.slice(0, 1).map((achievement) => (
-                <div
-                  key={achievement.id}
-                  className="flex items-center gap-3 p-3 bg-[var(--dashboard-card-hover)]/50 rounded-lg"
-                >
-                  <div className="p-2 bg-[var(--dashboard-card-hover)] rounded-lg flex-shrink-0">
-                    <achievement.icon
-                      size={16}
-                      className="text-[var(--gaming-purple)]"
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">
-                      {achievement.title}
-                    </p>
-                    <p className="text-xs text-[var(--dashboard-text-muted)] truncate">
-                      {achievement.game} • {achievement.date}
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-4 text-[var(--dashboard-text-muted)] text-sm">
-                No achievements yet
-              </div>
-            )}
-          </div>
-          <div className="mt-4">
-            <Link
-              to="/dashboard/achievements"
-              className="text-[var(--gaming-purple)] text-sm flex items-center hover:underline"
-            >
-              View all achievements
-              <ArrowRight size={14} className="ml-1" />
-            </Link>
-          </div>
-        </div>
-
-        {/* Friends */}
-        <div className="bg-[var(--dashboard-card)] rounded-xl p-4 sm:p-6 border border-[var(--dashboard-border)] order-3 sm:order-3 lg:order-3">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold">Friends</h2>
-            <div className="p-2 bg-[var(--gaming-purple-light)]/20 text-[var(--gaming-purple)] rounded-lg">
-              <Users size={18} />
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-[var(--dashboard-card-hover)]/50 rounded-lg">
-            <div className="min-w-0">
-              <p className="text-sm font-medium truncate">0 friends online</p>
-              <p className="text-xs text-[var(--dashboard-text-muted)] truncate">
-                0 friends total
+          <div className="flex-1 bg-[var(--dashboard-bg)] flex items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+            <div className="text-center z-10 p-6">
+              <Ship size={48} className="mx-auto mb-4 text-[var(--primary)] animate-pulse" />
+              <p className="text-[var(--dashboard-text-muted)] max-w-xs">
+                Ship Simulator is initializing. Real-time geospatial data will appear here once Step 1 is complete.
               </p>
             </div>
           </div>
-          <div className="mt-4">
-            <Link
-              to="/dashboard/friends"
-              className="text-[var(--gaming-purple)] text-sm flex items-center hover:underline"
-            >
-              View all friends
-              <ArrowRight size={14} className="ml-1" />
+        </div>
+
+        {/* Recent Alerts */}
+        <div className="bg-[var(--dashboard-card)] rounded-xl border border-[var(--dashboard-border)] flex flex-col">
+          <div className="p-4 border-b border-[var(--dashboard-border)] flex items-center justify-between">
+            <h2 className="font-semibold flex items-center gap-2">
+              <AlertTriangle size={18} className="text-red-500" />
+              Active Alerts
+            </h2>
+          </div>
+          <div className="flex-1 p-4 flex flex-col items-center justify-center text-center">
+            <div className="w-12 h-12 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-3">
+              <ShieldAlert size={24} />
+            </div>
+            <p className="font-medium text-sm">All clear</p>
+            <p className="text-xs text-[var(--dashboard-text-muted)] mt-1">
+              No geofence breaches or proximity warnings detected.
+            </p>
+          </div>
+          <div className="p-4 border-t border-[var(--dashboard-border)]">
+            <Link to="/dashboard" className="w-full py-2 flex items-center justify-center gap-2 text-sm font-medium text-[var(--primary)] hover:bg-[var(--primary)]/5 rounded-lg transition-colors">
+              <History size={16} />
+              View Alert History
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Recent Games */}
-      <div className="bg-[var(--dashboard-card)] rounded-xl p-4 sm:p-6 border border-[var(--dashboard-border)] mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-medium">Recent Games</h2>
-          <Link
-            to="/dashboard/games"
-            className="text-[var(--gaming-purple)] text-sm flex items-center hover:underline"
-          >
-            View all
-            <ArrowRight size={14} className="ml-1" />
-          </Link>
+      {/* Fleet List Preview */}
+      <div className="bg-[var(--dashboard-card)] rounded-xl border border-[var(--dashboard-border)] overflow-hidden">
+        <div className="p-4 border-b border-[var(--dashboard-border)]">
+          <h2 className="font-semibold">Fleet Manifest</h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {recentGames.length > 0 ? (
-            recentGames.map((game) => (
-              <MagicCard
-                key={game.id}
-                className="bg-[var(--dashboard-card-hover)]/50 rounded-lg overflow-hidden"
-                glowColor="var(--gaming-purple)"
-              >
-                <div className="h-32 overflow-hidden">
-                  <img
-                    src={game.image}
-                    alt={game.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-medium mb-1 truncate">{game.title}</h3>
-                  <div className="flex flex-col xs:flex-row justify-between text-xs text-[var(--dashboard-text-muted)] gap-1 xs:gap-0">
-                    <div className="flex items-center">
-                      <Clock size={14} className="mr-1 flex-shrink-0" />
-                      <span className="truncate">
-                        Last played: {game.lastPlayed}
-                      </span>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead>
+              <tr className="bg-[var(--dashboard-bg)] border-b border-[var(--dashboard-border)]">
+                <th className="px-6 py-3 font-medium text-[var(--dashboard-text-muted)] uppercase tracking-wider">Ship ID</th>
+                <th className="px-6 py-3 font-medium text-[var(--dashboard-text-muted)] uppercase tracking-wider">Name</th>
+                <th className="px-6 py-3 font-medium text-[var(--dashboard-text-muted)] uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 font-medium text-[var(--dashboard-text-muted)] uppercase tracking-wider">Fuel</th>
+                <th className="px-6 py-3 font-medium text-[var(--dashboard-text-muted)] uppercase tracking-wider">Destination</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--dashboard-border)]">
+              {[
+                { id: "MV-1", name: "Alcyon", status: "Normal", fuel: "82%", dest: "Bandar Abbas" },
+                { id: "MV-2", name: "Borealis", status: "Normal", fuel: "95%", dest: "Dubai" },
+                { id: "MV-3", name: "Cygnus", status: "Rerouting", fuel: "45%", dest: "Kuwait" },
+              ].map((ship) => (
+                <tr key={ship.id} className="hover:bg-[var(--dashboard-card-hover)] transition-colors">
+                  <td className="px-6 py-4 font-mono font-medium">{ship.id}</td>
+                  <td className="px-6 py-4">{ship.name}</td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                      ship.status === 'Normal' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 
+                      'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
+                    }`}>
+                      {ship.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="w-full bg-[var(--dashboard-bg)] rounded-full h-1.5 max-w-[100px]">
+                      <div className="bg-[var(--primary)] h-1.5 rounded-full" style={{ width: ship.fuel }}></div>
                     </div>
-                    <div className="flex items-center">
-                      <Activity size={14} className="mr-1 flex-shrink-0" />
-                      <span>{game.hoursPlayed} hrs</span>
-                    </div>
-                  </div>
-                </div>
-              </MagicCard>
-            ))
-          ) : (
-            <div className="col-span-full text-center py-8 text-[var(--dashboard-text-muted)] text-sm bg-[var(--dashboard-card-hover)]/20 rounded-lg">
-              No recent games. Start playing to see them here!
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Friends Activity */}
-      <div className="bg-[var(--dashboard-card)] rounded-xl p-4 sm:p-6 border border-[var(--dashboard-border)]">
-        <h2 className="text-lg font-medium mb-4 sm:mb-6">Friends Activity</h2>
-        <div className="space-y-4">
-          {friendsActivity.length > 0 ? (
-            friendsActivity.map((friend) => (
-              <div
-                key={friend.id}
-                className="flex items-start gap-3 sm:gap-4 p-3 hover:bg-[var(--dashboard-card-hover)]/50 rounded-lg transition-colors"
-              >
-                <img
-                  src={friend.avatar}
-                  alt={friend.name}
-                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{friend.name}</p>
-                  <p className="text-xs text-[var(--dashboard-text-muted)] truncate">
-                    {friend.activity}
-                  </p>
-                </div>
-                <div className="text-xs text-[var(--dashboard-text-muted)] whitespace-nowrap">
-                  {friend.time}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-8 text-[var(--dashboard-text-muted)] text-sm">
-              No recent activity from friends.
-            </div>
-          )}
-        </div>
-        <div className="mt-4 text-center">
-          <Link
-            to="/dashboard/friends"
-            className="text-[var(--gaming-purple)] text-sm hover:underline"
-          >
-            View all friends
-          </Link>
+                  </td>
+                  <td className="px-6 py-4 text-[var(--dashboard-text-muted)]">{ship.dest}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

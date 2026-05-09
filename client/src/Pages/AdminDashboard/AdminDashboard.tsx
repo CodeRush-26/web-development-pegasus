@@ -93,7 +93,7 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Shield className="text-[var(--gaming-purple)]" />
+            <Shield className="text-[var(--primary)]" />
             Admin Dashboard
           </h1>
           <div className="flex items-center gap-2">
@@ -105,14 +105,14 @@ export default function AdminDashboard() {
               <input
                 type="text"
                 placeholder="Search users..."
-                className="pl-10 pr-4 py-2 bg-[var(--dashboard-card-bg)] border border-[var(--dashboard-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--gaming-purple)] w-full md:w-64"
+                className="pl-10 pr-4 py-2 bg-[var(--card)] border border-[var(--border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary)] w-full md:w-64"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <button
               onClick={fetchUsers}
-              className="p-2 bg-[var(--dashboard-card-bg)] border border-[var(--dashboard-border)] rounded-md hover:bg-[var(--dashboard-card-hover)] transition-colors"
+              className="p-2 bg-[var(--card)] border border-[var(--border)] rounded-md hover:bg-[var(--dashboard-card-hover)] transition-colors"
               disabled={isLoading}
             >
               <RefreshCw
@@ -161,7 +161,7 @@ export default function AdminDashboard() {
                     >
                       <td className="px-4 py-3">
                         <div className="flex items-center">
-                          <div className="w-10 h-10 rounded-full bg-[var(--gaming-purple)] flex items-center justify-center overflow-hidden mr-3">
+                          <div className="w-10 h-10 rounded-full bg-[var(--primary)] flex items-center justify-center overflow-hidden mr-3">
                             {user.profilePicture ? (
                               <img
                                 src={user.profilePicture}

@@ -16,64 +16,9 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/theme-provider";
 
 // Custom icons
-const GamepadIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M6 11h4a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1Z" />
-    <path d="M14 10h4a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1Z" />
-    <path d="M6 20h4a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1Z" />
-    <path d="M17 20a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-  </svg>
-);
-
-const TrophyIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.11" />
-    <path d="M15 7a3 3 0 1 0-6 0c0 1.66.5 3 2 5h2c1.5-2 2-3.34 2-5Z" />
-  </svg>
-);
-
-const FriendsIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-    <circle cx="9" cy="7" r="4" />
-    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-  </svg>
-);
-
 const sidebarLinks = [
   {
-    title: "Dashboard",
+    title: "Command Center",
     icon: LayoutDashboard,
     path: "/dashboard",
     exact: true,
@@ -84,19 +29,14 @@ const sidebarLinks = [
     path: "/dashboard/profile",
   },
   {
-    title: "My Games",
-    icon: GamepadIcon,
-    path: "/dashboard/games",
+    title: "Fleet Map",
+    icon: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v20"/><path d="M2 12h20"/></svg>,
+    path: "/dashboard/map",
   },
   {
-    title: "Achievements",
-    icon: TrophyIcon,
-    path: "/dashboard/achievements",
-  },
-  {
-    title: "Friends",
-    icon: FriendsIcon,
-    path: "/dashboard/friends",
+    title: "Directives",
+    icon: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>,
+    path: "/dashboard/directives",
   },
   {
     title: "Settings",
@@ -198,14 +138,12 @@ export default function UserDashboard() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="text-[var(--gaming-purple)]"
+                className="text-[var(--primary)]"
               >
-                <path d="M6 11h4a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1Z" />
-                <path d="M14 10h4a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1Z" />
-                <path d="M6 20h4a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1Z" />
-                <path d="M17 20a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                <path d="M6 12v5c3 3 9 3 12 0v-5" />
               </svg>
-              CodeRush
+              Fleet Command
             </h2>
           </div>
 
@@ -243,7 +181,7 @@ export default function UserDashboard() {
                   className="w-10 h-10 rounded-full object-cover border-2 border-[var(--gaming-purple)]"
                 />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-[var(--dashboard-card-hover)] border-2 border-[var(--gaming-purple)] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-[var(--dashboard-card-hover)] border-2 border-[var(--primary)] flex items-center justify-center">
                   <User
                     size={20}
                     className="text-[var(--dashboard-text-muted)]"
@@ -266,10 +204,10 @@ export default function UserDashboard() {
                 {theme === "dark" ? (
                   <Moon
                     size={18}
-                    className="text-[var(--gaming-purple-light)]"
+                    className="text-[var(--primary)]"
                   />
                 ) : (
-                  <Sun size={18} className="text-[var(--gaming-purple)]" />
+                  <Sun size={18} className="text-[var(--primary)]" />
                 )}
                 <span>{theme === "dark" ? "Light" : "Dark"} Mode</span>
               </div>
@@ -334,7 +272,7 @@ export default function UserDashboard() {
                       className="w-10 h-10 rounded-full object-cover border-2 border-[var(--gaming-purple)]"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-[var(--dashboard-card)] border-2 border-[var(--gaming-purple)] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-[var(--dashboard-card)] border-2 border-[var(--primary)] flex items-center justify-center">
                       <User
                         size={20}
                         className="text-[var(--dashboard-text-muted)]"
