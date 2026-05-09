@@ -11,6 +11,7 @@ import {
   Sun,
   Moon,
   Ship,
+  History,
 } from "lucide-react";
 import useUserStore from "@/store/userStore";
 import { cn } from "@/lib/utils";
@@ -67,6 +68,17 @@ export default function UserDashboard() {
         exact: true,
       });
     }
+
+    // If Admin, add Playback View
+    if (user?.role === "admin") {
+      links.splice(1, 0, {
+        title: "Historical Playback",
+        icon: History,
+        path: "/dashboard/playback",
+        exact: true,
+      });
+    }
+
     return links;
   };
 

@@ -2,11 +2,13 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { useSocketStore } from "../store/socketStore";
 import { useFleetStore } from "../store/fleetStore";
+import { usePlaybackStore } from "../store/playbackStore";
 import useUserStore from "../store/userStore";
 
 export function useFleetSocket() {
   const { ws, connect, disconnect } = useSocketStore();
   const { setInitialState, applyUpdate, setActiveDirective } = useFleetStore();
+  const { setSnapshotsList, setCurrentSnapshot, setMarkers } = usePlaybackStore();
   const token = useUserStore((state) => state.token);
 
   useEffect(() => {
@@ -57,6 +59,18 @@ export function useFleetSocket() {
             // Audio beep for distress
             const audio = new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..."); 
             audio.play().catch(() => {}); // Ignore auto-play blocks
+            break;
+
+          case "snapshots_list":
+            setSnapshotsList(msg.payload.snapshots);
+            break;
+
+          case "snapshot_data":
+            setCurrentSnapshot(msg.payload);
+            break;
+
+          case "timeline_markers":
+            setMarkers(msg.payload.markers);
             break;
 
           case "error":

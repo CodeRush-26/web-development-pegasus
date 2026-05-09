@@ -21,6 +21,7 @@ import DashboardHome from "@/Pages/UserDashboard/DashboardHome";
 import DashboardProfile from "@/Pages/UserDashboard/DashboardProfile";
 import DashboardSettings from "@/Pages/UserDashboard/DashboardSettings";
 import AdminDashboard from "@/Pages/AdminDashboard/AdminDashboard";
+import PlaybackDashboard from "@/Pages/AdminDashboard/PlaybackDashboard";
 import CaptainView from "@/Pages/CaptainView/CaptainView";
 import LoginPage from "@/Pages/LoginPage/LoginPage";
 import RegisterPage from "@/Pages/RegisterPage/RegisterPage";
@@ -79,6 +80,7 @@ function App() {
         {/* Protected Admin Routes */}
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/dashboard/playback" element={<PlaybackDashboard />} />
         </Route>
 
         {/* Catch All */}
