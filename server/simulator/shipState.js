@@ -36,6 +36,8 @@ function buildShipState(raw) {
     insufficientFuel: false,
     currentPath: [],   // Populated by routeManager on first tick
     activeDirective: null,
+    isSimulating: false, // Paused by default until Captain engages
+    routingStrategy: 'optimized', // 'fastest' | 'fuel_efficient' | 'optimized'
   };
 }
 

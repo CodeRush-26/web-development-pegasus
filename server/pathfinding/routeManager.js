@@ -29,7 +29,7 @@ function computeRoute(ship, zones, weatherCells = []) {
   const destPort = PORTS_MAP.get(ship.destination);
   if (!destPort) return ship;
 
-  const { nodes, meta } = buildGrid(NAVIGABLE_POLYGON, zones, weatherCells);
+  const { nodes, meta } = buildGrid(NAVIGABLE_POLYGON, zones, weatherCells, ship.routingStrategy || 'optimized');
   const path = findPath(ship.position, destPort.position, nodes, meta);
 
   if (!path || path.length === 0) {

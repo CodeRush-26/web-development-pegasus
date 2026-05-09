@@ -33,7 +33,7 @@ const WEATHER_COST_MULTIPLIER = 1.5;
  * @param {import('../types/fleet.js').WeatherCell[]} weatherCells - Current weather
  * @returns {{ nodes: GridNode[][], meta: { latMin: number, lngMin: number, rows: number, cols: number } }}
  */
-function buildGrid(navigablePolygon, zones, weatherCells = []) {
+function buildGrid(navigablePolygon, zones, weatherCells = [], strategy = 'optimized') {
   // Convert navigable polygon to turf format [lng, lat]
   const navCoords = navigablePolygon.map((p) => [p[1], p[0]]);
   if (
@@ -81,16 +81,18 @@ function buildGrid(navigablePolygon, zones, weatherCells = []) {
         }
       }
 
-      // Weather cost: find nearest cell
+      // Weather cost logic based on strategy
       let cost = 1.0;
-      for (const cell of weatherCells) {
-        if (
-          Math.abs(cell.lat - lat) < GRID_STEP &&
-          Math.abs(cell.lng - lng) < GRID_STEP &&
-          cell.isAdverse
-        ) {
-          cost = WEATHER_COST_MULTIPLIER;
-          break;
+      if (strategy !== 'fastest') {
+        for (const cell of weatherCells) {
+          if (
+            Math.abs(cell.lat - lat) < GRID_STEP &&
+            Math.abs(cell.lng - lng) < GRID_STEP &&
+            cell.isAdverse
+          ) {
+            cost = strategy === 'fuel_efficient' ? 1000.0 : WEATHER_COST_MULTIPLIER;
+            break;
+          }
         }
       }
 
