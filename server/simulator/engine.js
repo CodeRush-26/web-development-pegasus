@@ -226,6 +226,17 @@ async function _handleClientMessage(ws, msg) {
         if (pathIntersectsZone(ship.currentPath, zone)) {
           const rerouted = { ...computeRoute(ship, zoneStore.getAllZones(), getWeatherCells()), status: "rerouting" };
           _fleet.set(id, rerouted);
+          // Alert the captain of the affected ship
+          const rerouteAlert = {
+            alertId: `reroute-${ship.shipId}-${Date.now()}`,
+            shipId: ship.shipId,
+            type: "zone_reroute",
+            severity: 3,
+            message: `A new restricted zone "${zone.name}" blocks your path. Your route has been automatically recalculated. Please review your new course.`,
+            timestamp: Date.now(),
+            acknowledged: false,
+          };
+          _pushAlert(rerouteAlert);
         }
       }
       broadcast(_wss, "zone_created", { zone });

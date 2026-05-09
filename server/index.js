@@ -21,6 +21,7 @@ import inviteRoutes from "./routes/inviteRoutes.js";
 import { createWebSocketServer } from "./websocket/server.js";
 import { startSimulator, stopSimulator } from "./simulator/engine.js";
 import { startWeatherRefresh, stopWeatherRefresh } from "./weather/weatherCache.js";
+import zoneStore from "./geofencing/zoneStore.js";
 
 dotenv.config();
 
@@ -55,6 +56,9 @@ const db = mongoose.connection;
 
 db.once("open", async () => {
   console.log("[DB] MongoDB connected");
+
+  // Load persisted restricted zones from DB before simulator starts
+  await zoneStore.loadFromDB();
 
   // Start weather cache (fetches immediately, then every 30 min)
   await startWeatherRefresh();

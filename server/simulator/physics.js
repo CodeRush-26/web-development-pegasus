@@ -95,7 +95,7 @@ function advanceShip(ship, weatherPenalty = false) {
 
   // Move toward next waypoint
   const target = next.currentPath[0];
-  const SIMULATION_SPEEDUP = 1000;
+  const SIMULATION_SPEEDUP = 700;
   const distNm = (next.speed * SIMULATION_SPEEDUP) / 3600; // nautical miles per second
   const distDeg = distNm * NM_TO_DEG;
   const totalDistDeg = Math.sqrt(

@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 
 export function useFleetSocket() {
   const { ws, connect, disconnect, send } = useSocketStore();
-  const { setInitialState, applyUpdate, setActiveDirective } = useFleetStore();
+  const { setInitialState, applyUpdate, setActiveDirective, addZone, removeZone, addAlert } = useFleetStore();
   const { setSnapshotsList, setCurrentSnapshot, setMarkers } = usePlaybackStore();
   const token = useUserStore((state) => state.token);
   const navigate = useNavigate();
@@ -52,11 +52,15 @@ export function useFleetSocket() {
 
           // ── Zone events ──────────────────────────────────────────────────
           case "zone_created":
-            toast.success(`Restricted zone "${msg.payload.zone.name}" activated`);
+            addZone(msg.payload.zone);
+            toast.success(`Restricted zone "${msg.payload.zone.name}" activated`, {
+              description: "Affected ships are being automatically rerouted."
+            });
             break;
 
           case "zone_deleted":
-            toast.info("Restricted zone removed.");
+            removeZone(msg.payload.zoneId);
+            toast.info("Restricted zone removed. Ships may recalculate routes.");
             break;
 
           // ── Directive events ─────────────────────────────────────────────

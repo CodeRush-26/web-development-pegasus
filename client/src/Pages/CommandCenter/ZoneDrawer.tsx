@@ -110,6 +110,7 @@ export function ZoneDrawer() {
               <X size={18} />
             </button>
           </div>
+        )}
         </div>
 
         {/* Active Zones List */}
