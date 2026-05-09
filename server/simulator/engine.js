@@ -15,6 +15,7 @@ import { checkProximity } from "../alerts/proximityChecker.js";
 import { maybeSaveSnapshot, getAllSnapshots, getSnapshotAt, getTimelineMarkers } from "../snapshots/snapshotStore.js";
 import { isAdverseAt, getWeatherCells } from "../weather/weatherCache.js";
 import { issueDirective, acceptDirective, escalateDirective, getPendingDirective } from "../directives/directiveManager.js";
+import { sendPushNotification, broadcastPushNotification } from "../services/pushService.js";
 import { parseDistressMessage } from "../ai/distressParser.js";
 import { broadcast, sendToShipCaptain } from "../websocket/server.js";
 import { checkNewZoneAgainstFleet as immediateZoneCheck } from "../geofencing/breachDetector.js";
@@ -249,6 +250,14 @@ async function _handleClientMessage(ws, msg) {
       // Notify the captain's WebSocket session
       sendToShipCaptain(_wss, payload.shipId, "directive_received", { directive });
       broadcast(_wss, "directive_issued", { directive });
+      
+      // We don't have Captain's userId mapped to shipId easily here without DB lookup,
+      // but in a real app we'd find the Captain's userId. For MVP, we broadcast to demo functionality.
+      broadcastPushNotification({
+        title: "New Directive Received",
+        body: `Priority directive issued to ${payload.shipId}. Please acknowledge.`,
+        url: "/dashboard/captain"
+      });
       break;
     }
 
@@ -287,6 +296,12 @@ async function _handleClientMessage(ws, msg) {
           aiParsed,
         });
         broadcast(_wss, "distress_parsed", { alertId, shipId: ws.assignedShipId, aiParsed });
+        
+        broadcastPushNotification({
+          title: "S.O.S. Distress Signal",
+          body: `Emergency reported from ${ws.assignedShipId}: ${distressText}`,
+          url: "/dashboard"
+        });
       }
       break;
     }
@@ -327,8 +342,43 @@ async function _handleClientMessage(ws, msg) {
       break;
     }
 
+    case "chat_send": {
+      // payload: { content: string, shipId?: string, receiverId?: string }
+      // This is a simplified in-memory broadcast for the MVP dispatch chat
+      const chatMessage = {
+        _id: `msg-${Date.now()}`,
+        senderId: ws.userId,
+        senderRole: ws.role,
+        shipId: ws.assignedShipId || payload.shipId || "fleet-command",
+        content: payload.content,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Save to Mongoose in the background (we won't await it to keep simulator fast)
+      import("../models/Message.js").then(({ default: Message }) => {
+        Message.create({
+          senderId: ws.userId,
+          senderRole: ws.role,
+          receiverId: payload.receiverId || "admin",
+          shipId: chatMessage.shipId,
+          content: chatMessage.content
+        }).catch(err => console.error("Failed to save chat message", err));
+      }).catch(() => {});
+
+      // Broadcast to admins and the specific captain if shipId is provided
+      if (ws.role === "admin" && payload.shipId) {
+        sendToShipCaptain(_wss, payload.shipId, "chat_receive", chatMessage);
+        // Also echo back to sender admin
+        ws.send(JSON.stringify({ type: "chat_receive", payload: chatMessage }));
+      } else {
+        // Broadcast to all admins and echo back to sender captain
+        broadcast(_wss, "chat_receive", chatMessage);
+      }
+      break;
+    }
+
     default:
-      console.warn("[Engine] Unknown message type:", type);
+      console.warn("[Simulator] Unknown message type:", type);
   }
 }
 

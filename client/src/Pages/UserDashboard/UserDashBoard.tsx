@@ -12,10 +12,12 @@ import {
   Moon,
   Ship,
   History,
+  MessageSquare,
 } from "lucide-react";
 import useUserStore from "@/store/userStore";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/theme-provider";
+import { DispatchChat } from "@/components/ui/dispatch-chat";
 
 // Custom icons
 const sidebarLinks = [
@@ -48,9 +50,11 @@ const sidebarLinks = [
 ];
 
 export default function UserDashboard() {
-  const navigate = useNavigate();
-  const location = useLocation();
   const { user, token, logout } = useUserStore();
+  const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const location = useLocation();
   const { theme, toggleTheme } = useTheme();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -359,6 +363,22 @@ export default function UserDashboard() {
         {/* Main Content */}
         <main className="flex-1 p-4 md:p-8 pt-4 md:pt-8 pb-20 bg-[var(--dashboard-bg)]">
           <Outlet />
+          
+          {/* Chat Component and Floating Button */}
+          <DispatchChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+          
+          {!isChatOpen && (
+            <button
+              onClick={() => setIsChatOpen(true)}
+              className="fixed bottom-6 right-6 z-[200] p-4 bg-[var(--primary)] text-white rounded-full shadow-lg shadow-[var(--primary)]/30 hover:scale-105 transition-transform flex items-center justify-center group"
+              title="Open Dispatch Comms"
+            >
+              <MessageSquare size={24} />
+              <span className="absolute right-full mr-3 bg-[var(--dashboard-card)] text-[var(--dashboard-text)] text-sm px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                Dispatch Comms
+              </span>
+            </button>
+          )}
         </main>
       </div>
     </div>

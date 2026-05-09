@@ -8,6 +8,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import fleetRoutes from "./routes/fleetRoutes.js";
+import pushRoutes from "./routes/pushRoutes.js";
 
 import { createWebSocketServer } from "./websocket/server.js";
 import { startSimulator, stopSimulator } from "./simulator/engine.js";
@@ -32,6 +33,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/fleet", fleetRoutes);
+app.use("/api/push", pushRoutes);
 
 app.get("/", (_, res) => res.send("Fleet Command Server — running"));
 

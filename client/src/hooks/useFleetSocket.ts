@@ -4,12 +4,14 @@ import { useSocketStore } from "../store/socketStore";
 import { useFleetStore } from "../store/fleetStore";
 import { usePlaybackStore } from "../store/playbackStore";
 import useUserStore from "../store/userStore";
+import { useNavigate } from "react-router-dom";
 
 export function useFleetSocket() {
   const { ws, connect, disconnect } = useSocketStore();
   const { setInitialState, applyUpdate, setActiveDirective } = useFleetStore();
   const { setSnapshotsList, setCurrentSnapshot, setMarkers } = usePlaybackStore();
   const token = useUserStore((state) => state.token);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (token) {
@@ -44,7 +46,14 @@ export function useFleetSocket() {
 
           case "directive_received":
             setActiveDirective(msg.payload.directive);
-            toast.error("NEW DIRECTIVE RECEIVED FROM COMMAND");
+            toast.error("NEW DIRECTIVE RECEIVED FROM COMMAND", {
+              description: "Click here to view in your inbox.",
+              action: {
+                label: "View",
+                onClick: () => navigate("/dashboard/captain"),
+              },
+              duration: 10000,
+            });
             const audio2 = new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..."); 
             audio2.play().catch(() => {});
             break;
@@ -55,7 +64,13 @@ export function useFleetSocket() {
             break;
 
           case "distress_parsed":
-            toast.error(`Distress message received from ${msg.payload.shipId}!`);
+            toast.error(`Distress message received from ${msg.payload.shipId}!`, {
+              description: "Click to open Fleet Map.",
+              action: {
+                label: "Command Center",
+                onClick: () => navigate("/dashboard"),
+              },
+            });
             // Audio beep for distress
             const audio = new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..."); 
             audio.play().catch(() => {}); // Ignore auto-play blocks

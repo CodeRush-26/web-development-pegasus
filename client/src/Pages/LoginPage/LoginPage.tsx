@@ -5,8 +5,9 @@ import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
 import api from "@/api/api";
 import useUserStore from "@/store/userStore";
-import { Lock, Mail, ArrowRight } from "lucide-react";
+import { Lock, Mail, ArrowRight, Compass } from "lucide-react";
 import { ThemeSwitcher } from "@/components/CustomComponents/ThemeSwitcher";
+import { motion } from "motion/react";
 
 interface GoogleUser {
   email: string;
@@ -109,174 +110,285 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--background)] flex flex-col">
+    <div className="min-h-screen bg-[var(--background)] flex flex-col relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 -z-10">
+        <motion.div
+          className="absolute top-0 -right-40 w-96 h-96 bg-[var(--primary)]/10 rounded-full blur-3xl"
+          animate={{
+            y: [0, 50, 0],
+            x: [0, 30, 0],
+          }}
+          transition={{ duration: 8, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute bottom-0 -left-40 w-96 h-96 bg-[var(--accent)]/10 rounded-full blur-3xl"
+          animate={{
+            y: [0, -50, 0],
+            x: [0, -30, 0],
+          }}
+          transition={{ duration: 8, repeat: Infinity, delay: 1 }}
+        />
+      </div>
+
       {/* Top Navigation */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)]">
+      <motion.div
+        className="fixed top-0 left-0 right-0 z-50 bg-[var(--background)]/50 backdrop-blur-xl border-b border-[var(--border)]/30"
+        initial={{ y: -80 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-2 font-bold text-lg">
-            <div className="w-8 h-8 bg-[var(--primary)] rounded-lg flex items-center justify-center">
-              <Lock className="w-5 h-5 text-white" />
-            </div>
-            Fleet Command
+          <Link to="/" className="flex items-center gap-3 font-bold text-lg group">
+            <motion.div
+              className="w-8 h-8 bg-[var(--primary)] rounded-lg flex items-center justify-center"
+              whileHover={{ scale: 1.1 }}
+            >
+              <Compass className="w-5 h-5 text-white" />
+            </motion.div>
+            <span>Fleet</span>
           </Link>
           <ThemeSwitcher />
         </div>
-      </div>
+      </motion.div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-4 pt-20 pb-8">
+      <div className="flex-1 flex items-center justify-center px-4 pt-20 pb-8 relative z-10">
         <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Side - Image */}
-          <div className="hidden lg:block relative">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <img
-                src="https://images.unsplash.com/photo-1541888062821-2e6f2122602f?w=800&h=900&fit=crop"
+          <motion.div
+            className="hidden lg:block relative"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl group">
+              <motion.img
+                src="https://images.unsplash.com/photo-1578574494640-8f5fcbdc0e98?w=800&h=900&fit=crop"
                 alt="Fleet Command Center"
                 className="w-full h-auto object-cover aspect-square"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.5 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-              <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                <h3 className="text-2xl font-bold mb-2">
-                  Global Fleet Operations
-                </h3>
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"
+                initial={{ opacity: 0.3 }}
+                whileHover={{ opacity: 0.5 }}
+              />
+              <motion.div
+                className="absolute bottom-0 left-0 right-0 p-8 text-white"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                <h3 className="text-3xl font-bold mb-2">Maritime Command</h3>
                 <p className="text-sm text-gray-200">
-                  Monitor and control your maritime fleet with real-time
-                  precision
+                  Real-time control of your entire fleet operations
                 </p>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Side - Login Form */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
             <div className="space-y-8">
-              <div className="space-y-2">
-                <h1 className="text-4xl font-bold">Welcome Back</h1>
-                <p className="text-[var(--foreground-muted)]">
-                  Sign in to your Fleet Command account
+              <motion.div
+                className="space-y-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <h1 className="text-5xl font-bold">Welcome Back</h1>
+                <p className="text-[var(--foreground-muted)] text-lg">
+                  Access your Fleet Command operations center
                 </p>
-              </div>
+              </motion.div>
 
               {/* Login Form */}
-              <form className="space-y-6" onSubmit={handleSubmit}>
+              <motion.form
+                className="space-y-6"
+                onSubmit={handleSubmit}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
                 {/* Email Field */}
-                <div>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                >
                   <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-[var(--foreground)] mb-2"
+                    className="block text-sm font-medium text-[var(--foreground)] mb-3"
                   >
                     Email Address
                   </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 w-5 h-5 text-[var(--muted-foreground)]" />
-                    <input
+                  <motion.div
+                    className="relative"
+                    whileFocus={{ scale: 1.02 }}
+                  >
+                    <Mail className="absolute left-4 top-4 w-5 h-5 text-[var(--muted-foreground)]" />
+                    <motion.input
                       id="email"
                       name="email"
                       type="email"
                       required
-                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
+                      className="w-full pl-12 pr-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)]/50 text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all backdrop-blur"
                       placeholder="your@email.com"
                       value={formData.email}
                       onChange={handleChange}
+                      whileHover={{ borderColor: "var(--primary)" }}
                     />
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
 
                 {/* Password Field */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <div className="flex items-center justify-between mb-3">
                     <label
                       htmlFor="password"
                       className="block text-sm font-medium text-[var(--foreground)]"
                     >
                       Password
                     </label>
-                    <button
+                    <motion.button
                       type="button"
                       className="text-sm text-[var(--primary)] hover:underline"
+                      whileHover={{ scale: 1.05 }}
                     >
-                      Forgot password?
-                    </button>
+                      Forgot?
+                    </motion.button>
                   </div>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 w-5 h-5 text-[var(--muted-foreground)]" />
-                    <input
+                  <motion.div
+                    className="relative"
+                    whileFocus={{ scale: 1.02 }}
+                  >
+                    <Lock className="absolute left-4 top-4 w-5 h-5 text-[var(--muted-foreground)]" />
+                    <motion.input
                       id="password"
                       name="password"
                       type="password"
                       required
-                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
+                      className="w-full pl-12 pr-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)]/50 text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all backdrop-blur"
                       placeholder="••••••••"
                       value={formData.password}
                       onChange={handleChange}
+                      whileHover={{ borderColor: "var(--primary)" }}
                     />
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
 
                 {/* Submit Button */}
-                <button
+                <motion.button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3 px-4 bg-[var(--primary)] text-white font-semibold rounded-lg hover:bg-[var(--primary)]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-[var(--primary)]/30 flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[var(--primary)]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 }}
                 >
                   {isLoading ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <motion.div
+                        className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      />
                       Signing in...
                     </>
                   ) : (
                     <>
                       Sign in
-                      <ArrowRight className="w-5 h-5" />
+                      <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+                        <ArrowRight className="w-5 h-5" />
+                      </motion.span>
                     </>
                   )}
-                </button>
-              </form>
+                </motion.button>
+              </motion.form>
 
               {/* Divider */}
-              <div className="relative">
+              <motion.div
+                className="relative"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-[var(--border)]"></div>
+                  <div className="w-full border-t border-[var(--border)]/30"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
                   <span className="px-3 bg-[var(--background)] text-[var(--muted-foreground)]">
                     Or continue with
                   </span>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Google Login */}
-              <div className="flex justify-center">
+              <motion.div
+                className="flex justify-center"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45 }}
+              >
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={handleGoogleFailure}
                 />
-              </div>
+              </motion.div>
 
               {/* Register Link */}
-              <div className="text-center">
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
                 <p className="text-[var(--foreground-muted)]">
                   Don't have an account?{" "}
-                  <button
+                  <motion.button
                     onClick={() => navigate("/register")}
                     className="font-semibold text-[var(--primary)] hover:underline"
+                    whileHover={{ scale: 1.05 }}
                   >
                     Create one now
-                  </button>
+                  </motion.button>
                 </p>
-              </div>
+              </motion.div>
 
               {/* Back to Home */}
-              <div className="pt-4">
+              <motion.div
+                className="pt-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.55 }}
+              >
                 <Link
                   to="/"
-                  className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors inline-flex items-center gap-1"
+                  className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors inline-flex items-center gap-1 group"
                 >
-                  ← Back to home
+                  <motion.span
+                    animate={{ x: [0, -5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    ←
+                  </motion.span>
+                  Back to home
                 </Link>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

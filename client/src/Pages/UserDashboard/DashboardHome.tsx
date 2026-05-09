@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { IssueDirectiveModal } from "@/components/ui/issue-directive-modal";
+import { ShipState } from "@/types/fleet";
 import useUserStore from "@/store/userStore";
 import {
   Ship,
@@ -19,10 +21,11 @@ import FleetMap from "@/Pages/CommandCenter/FleetMap";
 export default function DashboardHome() {
   const { user } = useUserStore();
   const [greeting, setGreeting] = useState("");
+  const { ships, alerts } = useFleetStore();
+  const [selectedShip, setSelectedShip] = useState<ShipState | null>(null);
   
   // Connect WebSocket to live fleet data
   useFleetSocket();
-  const { ships, alerts } = useFleetStore();
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -158,6 +161,7 @@ export default function DashboardHome() {
                 <th className="px-6 py-3 font-medium text-[var(--dashboard-text-muted)] uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 font-medium text-[var(--dashboard-text-muted)] uppercase tracking-wider">Fuel</th>
                 <th className="px-6 py-3 font-medium text-[var(--dashboard-text-muted)] uppercase tracking-wider">Destination</th>
+                <th className="px-6 py-3 font-medium text-[var(--dashboard-text-muted)] uppercase tracking-wider">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--dashboard-border)]">
@@ -188,6 +192,16 @@ export default function DashboardHome() {
                   <td className="px-6 py-4 text-[var(--dashboard-text-muted)] truncate max-w-[150px]" title={ship.destinationName}>
                     {ship.destinationName}
                   </td>
+                  <td className="px-6 py-4">
+                    {user?.role === "admin" && (
+                      <button 
+                        onClick={() => setSelectedShip(ship)}
+                        className="text-[var(--primary)] hover:underline text-sm font-medium"
+                      >
+                        Issue Directive
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
               {ships.length === 0 && (
@@ -207,6 +221,13 @@ export default function DashboardHome() {
           </Link>
         </div>
       </div>
+
+      {selectedShip && (
+        <IssueDirectiveModal 
+          ship={selectedShip} 
+          onClose={() => setSelectedShip(null)} 
+        />
+      )}
     </div>
   );
 }

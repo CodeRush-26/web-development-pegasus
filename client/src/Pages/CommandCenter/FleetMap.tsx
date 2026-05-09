@@ -96,6 +96,94 @@ function ZonePolygon({ zone }: { zone: Zone }) {
   return null;
 }
 
+/** Helper component to render ship routes (multiple alternative paths) */
+function ShipRoute({ ship, selected }: { ship: ShipState; selected: boolean }) {
+  const map = useMap();
+  const [primaryLine, setPrimaryLine] = useState<google.maps.Polyline | null>(null);
+  const [altLineA, setAltLineA] = useState<google.maps.Polyline | null>(null);
+  const [altLineB, setAltLineB] = useState<google.maps.Polyline | null>(null);
+
+  useEffect(() => {
+    if (!map || !ship.currentPath || ship.currentPath.length < 2) return;
+
+    // We only render paths for the selected ship to avoid map clutter, unless there are very few ships.
+    // Actually, rendering for all is fine if the user wants to see the whole routing network.
+    // For this MVP, we render primary for all, but alternative routes only for the selected ship.
+
+    const path = ship.currentPath.map(p => ({ lat: p[0], lng: p[1] }));
+
+    // Primary Line
+    const pLine = new google.maps.Polyline({
+      path,
+      geodesic: true,
+      strokeColor: ship.weatherPenaltyActive ? "#f59e0b" : "#3b82f6",
+      strokeOpacity: selected ? 0.8 : 0.3,
+      strokeWeight: selected ? 4 : 2,
+      map
+    });
+
+    setPrimaryLine(pLine);
+
+    // Alternative lines (only show when selected to avoid clutter)
+    let aLine: google.maps.Polyline | null = null;
+    let bLine: google.maps.Polyline | null = null;
+
+    if (selected && window.google?.maps?.geometry) {
+      // Create alternative routes by offsetting the path using spherical geometry
+      const altPathA = path.map(p => {
+        const latLng = new google.maps.LatLng(p.lat, p.lng);
+        // Offset by ~50km to the right
+        return google.maps.geometry.spherical.computeOffset(latLng, 50000, 90).toJSON();
+      });
+
+      aLine = new google.maps.Polyline({
+        path: altPathA,
+        geodesic: true,
+        strokeColor: "#9ca3af",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        icons: [{
+          icon: { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 2 },
+          offset: '0',
+          repeat: '20px'
+        }],
+        map
+      });
+
+      const altPathB = path.map(p => {
+        const latLng = new google.maps.LatLng(p.lat, p.lng);
+        // Offset by ~50km to the left
+        return google.maps.geometry.spherical.computeOffset(latLng, 50000, -90).toJSON();
+      });
+
+      bLine = new google.maps.Polyline({
+        path: altPathB,
+        geodesic: true,
+        strokeColor: "#ef4444",
+        strokeOpacity: 0.6,
+        strokeWeight: 2,
+        icons: [{
+          icon: { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 2 },
+          offset: '0',
+          repeat: '20px'
+        }],
+        map
+      });
+
+      setAltLineA(aLine);
+      setAltLineB(bLine);
+    }
+
+    return () => {
+      pLine.setMap(null);
+      if (aLine) aLine.setMap(null);
+      if (bLine) bLine.setMap(null);
+    };
+  }, [map, ship.currentPath, selected, ship.weatherPenaltyActive]);
+
+  return null;
+}
+
 export default function FleetMap() {
   const { ships, zones, selectedShipId } = useFleetStore();
   const [apiKey, setApiKey] = useState("");
@@ -126,13 +214,18 @@ export default function FleetMap() {
         disableDefaultUI={true}
         className="w-full h-full relative"
       >
-        {/* Render Ships */}
+        {/* Render Ships & Routes */}
         {ships.map((ship) => (
-          <ShipMarker 
-            key={ship.shipId} 
-            ship={ship} 
-            selected={ship.shipId === selectedShipId} 
-          />
+          <div key={ship.shipId}>
+            <ShipRoute 
+              ship={ship} 
+              selected={ship.shipId === selectedShipId} 
+            />
+            <ShipMarker 
+              ship={ship} 
+              selected={ship.shipId === selectedShipId} 
+            />
+          </div>
         ))}
 
         {/* Render Zones */}

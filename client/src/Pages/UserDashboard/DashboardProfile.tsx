@@ -11,6 +11,7 @@ import {
   Camera,
   Upload,
   Check,
+  BellRing,
 } from "lucide-react";
 import { useTheme } from "@/lib/theme-provider";
 import { IKContext, IKUpload } from "imagekitio-react";
@@ -31,6 +32,49 @@ export default function DashboardProfile() {
     confirmPassword: "",
   });
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isPushEnabled, setIsPushEnabled] = useState(false);
+
+  useEffect(() => {
+    if ("Notification" in window) {
+      setIsPushEnabled(Notification.permission === "granted");
+    }
+  }, []);
+
+  const handleEnablePush = async () => {
+    try {
+      if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+        toast.error("Push Notifications are not supported by this browser");
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        toast.error("Notification permission denied");
+        return;
+      }
+
+      const registration = await navigator.serviceWorker.ready;
+      
+      const response = await api.get("/api/push/vapid-public-key");
+      const publicKey = response.data.publicKey;
+      
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: publicKey
+      });
+
+      await api.post("/api/push/subscribe", {
+        subscription,
+        userId: user?.id
+      });
+
+      setIsPushEnabled(true);
+      toast.success("Push Notifications Enabled", { description: "You will now receive emergency alerts" });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to enable push notifications");
+    }
+  };
 
   useEffect(() => {
     // Set initial form data from user store
@@ -510,6 +554,37 @@ export default function DashboardProfile() {
                         className="text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text)] bg-[var(--dashboard-card-hover)]/50 hover:bg-[var(--dashboard-card-hover)] border-[var(--dashboard-border)]"
                       >
                         Verify
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-4 bg-[var(--dashboard-card-hover)]/50 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium mb-1 flex items-center gap-2">
+                        <BellRing size={16} className="text-[var(--primary)]" />
+                        Push Notifications
+                      </p>
+                      <p className="text-sm text-[var(--dashboard-text-muted)]">
+                        {isPushEnabled
+                          ? "You are receiving crisis alerts on this device"
+                          : "Enable to receive emergency directives instantly"}
+                      </p>
+                    </div>
+                    {isPushEnabled ? (
+                      <div className="flex items-center gap-1 text-green-500 text-sm">
+                        <Check size={16} />
+                        <span>Enabled</span>
+                      </div>
+                    ) : (
+                      <Button
+                        onClick={handleEnablePush}
+                        variant="outline"
+                        size="sm"
+                        className="bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white border-transparent"
+                      >
+                        Enable Push
                       </Button>
                     )}
                   </div>
