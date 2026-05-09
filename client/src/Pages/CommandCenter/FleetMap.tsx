@@ -61,43 +61,50 @@ function ShipMarker({ ship, selected }: { ship: ShipState; selected: boolean }) 
 /** Helper component to render a polygon using Google Maps API */
 function ZonePolygon({ zone }: { zone: Zone }) {
   const map = useMap();
-  const [polygon, setPolygon] = useState<google.maps.Polygon | null>(null);
 
   useEffect(() => {
     if (!map) return;
 
     const paths = zone.polygon.map(p => ({ lat: p[0], lng: p[1] }));
     
+    // Color: ship-specific zones are amber, fleet-wide are red
+    const isShipSpecific = zone.restrictedShipIds && zone.restrictedShipIds.length > 0;
+    const strokeColor = isShipSpecific ? "#f59e0b" : "#ef4444";
+    const fillColor   = isShipSpecific ? "#f59e0b" : "#ef4444";
+
     const p = new google.maps.Polygon({
       paths,
-      strokeColor: "#ef4444",
-      strokeOpacity: 0.8,
+      strokeColor,
+      strokeOpacity: 0.9,
       strokeWeight: 2,
-      fillColor: "#ef4444",
-      fillOpacity: 0.35,
+      fillColor,
+      fillOpacity: 0.3,
       map,
     });
 
-    // Add tooltip
+    const label = isShipSpecific
+      ? `⚠ ${zone.name}<br/><small>Restricts: ${zone.restrictedShipIds!.join(", ")}</small>`
+      : `🚫 ${zone.name}`;
+
     const infoWindow = new google.maps.InfoWindow({
-      content: `<div style="padding: 4px; font-weight: bold; color: #ef4444;">${zone.name}</div>`
+      content: `<div style="padding:6px;font-weight:bold;color:${strokeColor};line-height:1.4">${label}</div>`
     });
 
-    p.addListener('mouseover', (e: any) => {
+    p.addListener('click', (e: any) => {
       infoWindow.setPosition(e.latLng);
       infoWindow.open(map);
     });
 
-    p.addListener('mouseout', () => {
-      infoWindow.close();
-    });
-
-    setPolygon(p);
+    p.addListener('mouseout', () => infoWindow.close());
 
     return () => {
       p.setMap(null);
+      infoWindow.close();
     };
-  }, [map, zone]);
+    // Only depend on zone identity + map, not the full zone object reference.
+    // This prevents polygon being destroyed/recreated every fleet_update tick.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, zone.zoneId]);
 
   return null;
 }

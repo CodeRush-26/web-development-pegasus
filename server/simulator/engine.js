@@ -217,6 +217,7 @@ async function _handleClientMessage(ws, msg) {
         name: payload.name,
         polygon: payload.polygon,
         createdBy: ws.userId,
+        restrictedShipIds: payload.restrictedShipIds ?? [],
       });
       // Immediately check for ships already inside
       const breachAlerts = checkNewZoneAgainstFleet(getFleetArray(), zone);

@@ -31,6 +31,7 @@ class ZoneStore extends EventEmitter {
           polygon: doc.polygon,
           createdAt: doc.createdAt,
           createdBy: doc.createdBy,
+          restrictedShipIds: doc.restrictedShipIds ?? [],
         });
       }
       console.log(`[ZoneStore] Loaded ${docs.length} zone(s) from DB.`);
@@ -52,6 +53,7 @@ class ZoneStore extends EventEmitter {
       polygon: zoneInput.polygon,
       createdAt: Date.now(),
       createdBy: zoneInput.createdBy,
+      restrictedShipIds: zoneInput.restrictedShipIds ?? [],
     };
     this._zones.set(zone.zoneId, zone);
 

@@ -9,12 +9,13 @@ import { Button } from "@/components/ui/button";
 export function ZoneDrawer() {
   const map = useMap();
   const { send } = useSocketStore();
-  const { zones } = useFleetStore();
+  const { zones, ships } = useFleetStore();
   const [isDrawing, setIsDrawing] = useState(false);
   const [vertices, setVertices] = useState<[number, number][]>([]);
   const [zoneName, setZoneName] = useState("");
   const [showNameDialog, setShowNameDialog] = useState(false);
   const [showZoneList, setShowZoneList] = useState(false);
+  const [selectedShipIds, setSelectedShipIds] = useState<string[]>([]); // empty = all ships
 
   // We add a click listener to the map when drawing mode is active
   useEffect(() => {
@@ -38,6 +39,7 @@ export function ZoneDrawer() {
     setVertices([]);
     setShowNameDialog(false);
     setZoneName("");
+    setSelectedShipIds([]);
   };
 
   const handleFinishDrawing = () => {
@@ -57,6 +59,7 @@ export function ZoneDrawer() {
     send("zone_create", {
       name: zoneName,
       polygon: vertices,
+      restrictedShipIds: selectedShipIds, // [] means all ships
     });
 
     handleCancel();
@@ -145,23 +148,50 @@ export function ZoneDrawer() {
           <div className="bg-[var(--dashboard-card)] p-6 rounded-xl border border-[var(--dashboard-border)] w-full max-w-md shadow-2xl">
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
               <Hexagon className="text-red-500" />
-              Name Restricted Zone
+              Configure Restricted Zone
             </h3>
             <p className="text-sm text-[var(--dashboard-text-muted)] mb-4">
               Ships entering this zone will trigger a severity 4 geofence breach alert.
             </p>
-            <input
-              type="text"
-              autoFocus
-              value={zoneName}
-              onChange={(e) => setZoneName(e.target.value)}
-              placeholder="e.g. Navigational Hazard Alpha"
-              className="w-full px-3 py-2 bg-[var(--dashboard-bg)] border border-[var(--dashboard-border)] rounded-md mb-6 focus:outline-none focus:ring-2 focus:ring-red-500"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSaveZone();
-                if (e.key === 'Escape') handleCancel();
-              }}
-            />
+            <div className="mb-4">
+              <label className="text-xs font-semibold uppercase tracking-wider text-[var(--dashboard-text-muted)] block mb-1">Zone Name</label>
+              <input
+                type="text"
+                autoFocus
+                value={zoneName}
+                onChange={(e) => setZoneName(e.target.value)}
+                placeholder="e.g. Navigational Hazard Alpha"
+                className="w-full px-3 py-2 bg-[var(--dashboard-bg)] border border-[var(--dashboard-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSaveZone();
+                  if (e.key === 'Escape') handleCancel();
+                }}
+              />
+            </div>
+            <div className="mb-6">
+              <label className="text-xs font-semibold uppercase tracking-wider text-[var(--dashboard-text-muted)] block mb-2">
+                Restrict Specific Ships <span className="normal-case font-normal">(leave blank = blocks ALL ships)</span>
+              </label>
+              <div className="max-h-40 overflow-y-auto grid grid-cols-2 gap-1.5">
+                {ships.map(ship => (
+                  <label key={ship.shipId} className="flex items-center gap-2 cursor-pointer text-sm hover:bg-[var(--dashboard-bg)] px-2 py-1 rounded">
+                    <input
+                      type="checkbox"
+                      checked={selectedShipIds.includes(ship.shipId)}
+                      onChange={(e) => {
+                        if (e.target.checked) setSelectedShipIds(prev => [...prev, ship.shipId]);
+                        else setSelectedShipIds(prev => prev.filter(id => id !== ship.shipId));
+                      }}
+                      className="accent-red-500"
+                    />
+                    <span className="truncate">{ship.name || ship.shipId}</span>
+                  </label>
+                ))}
+              </div>
+              {selectedShipIds.length > 0 && (
+                <p className="text-xs text-amber-400 mt-1">⚠ Zone will only affect: {selectedShipIds.join(", ")}</p>
+              )}
+            </div>
             <div className="flex justify-end gap-3">
               <Button variant="outline" onClick={handleCancel}>Cancel</Button>
               <Button className="bg-red-500 hover:bg-red-600 text-white" onClick={handleSaveZone}>

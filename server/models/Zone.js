@@ -22,6 +22,12 @@ const zoneSchema = new mongoose.Schema({
     type: String,
     default: "system",
   },
+  // If non-empty, only these ship IDs are blocked from entering this zone.
+  // If empty/null, the zone applies to ALL ships.
+  restrictedShipIds: {
+    type: [String],
+    default: [],
+  },
 });
 
 const Zone = mongoose.model("Zone", zoneSchema);

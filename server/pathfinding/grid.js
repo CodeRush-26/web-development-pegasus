@@ -33,7 +33,7 @@ const WEATHER_COST_MULTIPLIER = 1.5;
  * @param {import('../types/fleet.js').WeatherCell[]} weatherCells - Current weather
  * @returns {{ nodes: GridNode[][], meta: { latMin: number, lngMin: number, rows: number, cols: number } }}
  */
-function buildGrid(navigablePolygon, zones, weatherCells = [], strategy = 'optimized') {
+function buildGrid(navigablePolygon, zones, weatherCells = [], strategy = 'optimized', shipId = null) {
   // Convert navigable polygon to turf format [lng, lat]
   const navCoords = navigablePolygon.map((p) => [p[1], p[0]]);
   if (
@@ -44,8 +44,17 @@ function buildGrid(navigablePolygon, zones, weatherCells = [], strategy = 'optim
   }
   const navPolygon = polygon([navCoords]);
 
+  // Filter zones to only those that apply to this specific ship.
+  // A zone applies if: it has no restrictedShipIds (applies to all),
+  // OR the shipId is in its restrictedShipIds list.
+  const applicableZones = shipId
+    ? zones.filter(z =>
+        !z.restrictedShipIds || z.restrictedShipIds.length === 0 || z.restrictedShipIds.includes(shipId)
+      )
+    : zones;
+
   // Pre-build zone polygons
-  const zonePolygons = zones.map((z) => {
+  const zonePolygons = applicableZones.map((z) => {
     const coords = z.polygon.map((p) => [p[1], p[0]]);
     if (coords[0][0] !== coords[coords.length - 1][0]) coords.push(coords[0]);
     return polygon([coords]);

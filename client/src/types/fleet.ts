@@ -49,6 +49,7 @@ export interface Zone {
   polygon: [number, number][]; // [lat, lng][]
   createdAt: number;
   createdBy: string;
+  restrictedShipIds?: string[];
 }
 
 export interface Port {

@@ -31,11 +31,22 @@ export const useFleetStore = create<FleetState>((set) => ({
   setInitialState: (data) => set({ ...data }),
 
   applyUpdate: (data) =>
-    set((state) => ({
-      ships: data.ships,
-      alerts: data.alerts, // Replace alerts entirely (server deduplicates and syncs state)
-      zones: data.zones,
-    })),
+    set((state) => {
+      // Merge zones by ID to preserve object identity across ticks.
+      // This prevents ZonePolygon from flickering on every fleet_update.
+      const existingZoneIds = new Set(state.zones.map(z => z.zoneId));
+      const incomingZoneIds = new Set(data.zones.map((z: any) => z.zoneId));
+      // Keep zones that exist in incoming, add new ones, remove deleted ones
+      const mergedZones = [
+        ...state.zones.filter(z => incomingZoneIds.has(z.zoneId)), // retain existing refs
+        ...data.zones.filter((z: any) => !existingZoneIds.has(z.zoneId)), // add new
+      ];
+      return {
+        ships: data.ships,
+        alerts: data.alerts,
+        zones: mergedZones,
+      };
+    }),
 
   setSelectedShip: (id) => set({ selectedShipId: id }),
 
