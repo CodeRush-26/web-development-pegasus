@@ -61,7 +61,7 @@ export interface Port {
 export interface Directive {
   directiveId: string;
   shipId: string;
-  type: "reroute_to_port" | "divert_to_waypoint" | "hold_position";
+  type: "reroute_to_port" | "divert_to_waypoint" | "hold_position" | "evacuate_zone";
   targetPortId: string | null;
   targetWaypoint: [number, number] | null;
   issuedAt: number;

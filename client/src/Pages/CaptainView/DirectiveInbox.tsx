@@ -59,6 +59,7 @@ export function DirectiveInbox({ directive, shipId }: DirectiveInboxProps) {
       case "reroute_to_port": return <Navigation className="text-amber-500" />;
       case "divert_to_waypoint": return <MapPin className="text-blue-500" />;
       case "hold_position": return <Hand className="text-red-500" />;
+      case "evacuate_zone": return <Navigation className="text-amber-500" />;
       default: return <AlertCircle className="text-primary" />;
     }
   };
@@ -68,6 +69,7 @@ export function DirectiveInbox({ directive, shipId }: DirectiveInboxProps) {
       case "reroute_to_port": return `Reroute to Port: ${directive.targetPortId}`;
       case "divert_to_waypoint": return `Divert to coordinates: ${directive.targetWaypoint?.map(c => c.toFixed(4)).join(", ")}`;
       case "hold_position": return "Hold current position immediately";
+      case "evacuate_zone": return "Evacuate restricted zone immediately";
       default: return "Unknown directive";
     }
   };

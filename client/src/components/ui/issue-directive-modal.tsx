@@ -12,7 +12,7 @@ interface IssueDirectiveModalProps {
 
 export function IssueDirectiveModal({ ship, onClose }: IssueDirectiveModalProps) {
   const { send } = useSocketStore();
-  const [directiveType, setDirectiveType] = useState<"hold_position" | "reroute_to_port" | "divert_to_waypoint">("hold_position");
+  const [directiveType, setDirectiveType] = useState<"hold_position" | "reroute_to_port" | "divert_to_waypoint" | "evacuate_zone">("hold_position");
 
   const handleIssue = () => {
     // Basic validation
@@ -84,6 +84,22 @@ export function IssueDirectiveModal({ ship, onClose }: IssueDirectiveModalProps)
                 <div>
                   <div className="font-medium">Reroute to Safe Port</div>
                   <div className="text-xs text-[var(--dashboard-text-muted)]">Divert to the nearest available safe harbor.</div>
+                </div>
+              </label>
+
+              <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${directiveType === 'evacuate_zone' ? 'border-amber-500 bg-amber-500/10' : 'border-[var(--dashboard-border)] hover:bg-[var(--dashboard-card-hover)]'}`}>
+                <input 
+                  type="radio" 
+                  name="directive" 
+                  value="evacuate_zone" 
+                  checked={directiveType === "evacuate_zone"}
+                  onChange={() => setDirectiveType("evacuate_zone")}
+                  className="hidden"
+                />
+                <Navigation className={directiveType === 'evacuate_zone' ? 'text-amber-500' : 'text-[var(--dashboard-text-muted)]'} size={20} />
+                <div>
+                  <div className="font-medium">Evacuate Restricted Zone</div>
+                  <div className="text-xs text-[var(--dashboard-text-muted)]">Take the shortest path out of the restricted zone.</div>
                 </div>
               </label>
             </div>

@@ -54,6 +54,7 @@ function DirectiveIcon({ type }: { type: string }) {
   if (type === "reroute_to_port") return <Navigation size={16} className="text-blue-400" />;
   if (type === "hold_position") return <Hand size={16} className="text-red-400" />;
   if (type === "divert_to_waypoint") return <MapPin size={16} className="text-amber-400" />;
+  if (type === "evacuate_zone") return <Navigation size={16} className="text-amber-500" />;
   return <AlertCircle size={16} className="text-gray-400" />;
 }
 
