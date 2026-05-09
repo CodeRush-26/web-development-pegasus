@@ -1,17 +1,48 @@
 import { Link } from "react-router-dom";
 import { ThemeSwitcher } from "@/components/CustomComponents/ThemeSwitcher";
-import { Compass, Shield, Zap, AlertTriangle, ArrowRight, Menu, X } from "lucide-react";
-import { motion } from "motion/react";
-import { useState } from "react";
+import {
+  Compass,
+  Shield,
+  Zap,
+  AlertTriangle,
+  ArrowRight,
+  Menu,
+  X,
+} from "lucide-react";
+import { motion, useScroll, useTransform } from "motion/react";
+import { useState, useRef } from "react";
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const containerRef = useRef(null);
+  const heroRef = useRef(null);
+  const fleetRef = useRef(null);
+  const securityRef = useRef(null);
+
+  const { scrollYProgress: heroProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+
+  const { scrollYProgress: fleetProgress } = useScroll({
+    target: fleetRef,
+    offset: ["start end", "end start"],
+  });
+
+  const { scrollYProgress: securityProgress } = useScroll({
+    target: securityRef,
+    offset: ["start end", "end start"],
+  });
+
+  const heroImageY = useTransform(heroProgress, [0, 1], [0, 100]);
+  const fleetImageY = useTransform(fleetProgress, [0, 1], [50, -50]);
+  const securityImageY = useTransform(securityProgress, [0, 1], [50, -50]);
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <div className="w-screen overflow-x-hidden min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       {/* Fixed Top Navigation - Clean and Professional */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[var(--background)] border-b border-[var(--border)]">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-6 lg:px-8 py-4 flex justify-between items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -32,18 +63,29 @@ export default function HomePage() {
               className="hidden md:flex items-center gap-8"
             >
               {["Dashboard", "About", "Contact"].map((item) => (
-                <a key={item} href="#" className="text-sm font-medium hover:text-[var(--primary)] transition-colors">
+                <a
+                  key={item}
+                  href="#"
+                  className="text-sm font-medium hover:text-[var(--primary)] transition-colors"
+                >
                   {item}
                 </a>
               ))}
             </motion.div>
             <ThemeSwitcher />
-            <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            <button
+              className="md:hidden"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
-        
+
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <motion.div
@@ -51,9 +93,13 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             className="md:hidden border-t border-[var(--border)] bg-[var(--card)]"
           >
-            <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
+            <div className="max-w-screen-2xl mx-auto px-4 md:px-6 lg:px-8 py-4 flex flex-col gap-4">
               {["Dashboard", "About", "Contact"].map((item) => (
-                <a key={item} href="#" className="text-sm font-medium hover:text-[var(--primary)] transition-colors">
+                <a
+                  key={item}
+                  href="#"
+                  className="text-sm font-medium hover:text-[var(--primary)] transition-colors"
+                >
                   {item}
                 </a>
               ))}
@@ -63,8 +109,11 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section - Clean and Professional */}
-      <section className="relative pt-32 pb-16 md:pt-40 md:pb-24 px-4">
-        <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <section
+        className="relative pt-32 pb-16 md:pt-40 md:pb-24 px-4 md:px-6 lg:px-8 overflow-hidden mx-auto max-w-screen-2xl w-full"
+        ref={heroRef}
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
           {/* Left Content */}
           <motion.div className="flex flex-col justify-center">
             {/* Status Badge */}
@@ -76,7 +125,9 @@ export default function HomePage() {
             >
               <div className="px-4 py-2 bg-[var(--primary)]/10 rounded-lg border border-[var(--primary)]/20 flex items-center gap-2">
                 <div className="w-2 h-2 bg-[var(--primary)] rounded-full" />
-                <span className="text-sm font-medium text-[var(--primary)]">Real-time Fleet Management</span>
+                <span className="text-sm font-medium text-[var(--primary)]">
+                  Real-time Fleet Management
+                </span>
               </div>
             </motion.div>
 
@@ -98,7 +149,9 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-lg text-[var(--muted-foreground)] mb-8 leading-relaxed max-w-lg"
             >
-              Advanced maritime command center. Real-time vessel tracking, geofencing, crisis management, and fleet coordination all in one unified platform.
+              Advanced maritime command center. Real-time vessel tracking,
+              geofencing, crisis management, and fleet coordination all in one
+              unified platform.
             </motion.p>
 
             {/* CTA Buttons */}
@@ -137,35 +190,40 @@ export default function HomePage() {
                 { value: "∞", label: "Scalability" },
               ].map((stat, i) => (
                 <div key={i} className="text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-[var(--primary)]">{stat.value}</div>
-                  <div className="text-sm text-[var(--muted-foreground)] mt-2">{stat.label}</div>
+                  <div className="text-2xl md:text-3xl font-bold text-[var(--primary)]">
+                    {stat.value}
+                  </div>
+                  <div className="text-sm text-[var(--muted-foreground)] mt-2">
+                    {stat.label}
+                  </div>
                 </div>
               ))}
             </motion.div>
           </motion.div>
 
-          {/* Right - Visual Feature */}
+          {/* Right - Parallax Image */}
           <motion.div
-            className="hidden lg:flex items-center justify-center"
+            className="hidden lg:block relative h-96 md:h-[500px]"
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
+            style={{ y: heroImageY }}
           >
-            <div className="relative w-full aspect-square max-w-md">
-              <div className="absolute inset-0 bg-[var(--primary)] rounded-2xl opacity-10" />
-              <div className="absolute inset-4 border border-[var(--border)] rounded-xl" />
-              <div className="absolute inset-8 bg-[var(--card)] rounded-lg border border-[var(--border)]/50 p-6 flex flex-col items-center justify-center">
-                <Compass className="w-16 h-16 text-[var(--primary)] mb-4" />
-                <p className="text-center text-sm font-medium">Real-time Maritime Command</p>
-              </div>
+            <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl">
+              <img
+                src="https://images.unsplash.com/photo-1632745486688-e4d4cc4518f0?w=800&h=600&fit=crop"
+                alt="Maritime Command Center"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* Features Section - Clean Grid */}
-      <section className="py-24 px-4 border-t border-[var(--border)]">
-        <div className="container mx-auto">
+      <section className="py-16 md:py-24 px-4 md:px-6 lg:px-8 border-t border-[var(--border)] mx-auto max-w-screen-2xl w-full">
+        <div>
           {/* Section Header */}
           <motion.div
             className="text-center mb-16"
@@ -188,7 +246,8 @@ export default function HomePage() {
               {
                 icon: Compass,
                 title: "Live Tracking",
-                description: "Real-time GPS positioning with sub-meter accuracy",
+                description:
+                  "Real-time GPS positioning with sub-meter accuracy",
               },
               {
                 icon: Shield,
@@ -198,7 +257,8 @@ export default function HomePage() {
               {
                 icon: AlertTriangle,
                 title: "Crisis Management",
-                description: "Instant distress analysis and response coordination",
+                description:
+                  "Instant distress analysis and response coordination",
               },
               {
                 icon: Zap,
@@ -219,8 +279,12 @@ export default function HomePage() {
                   <div className="w-12 h-12 bg-[var(--primary)]/10 text-[var(--primary)] rounded-lg flex items-center justify-center mb-4">
                     <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-[var(--muted-foreground)] text-sm leading-relaxed">{feature.description}</p>
+                  <h3 className="text-lg font-semibold mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-[var(--muted-foreground)] text-sm leading-relaxed">
+                    {feature.description}
+                  </p>
                 </motion.div>
               );
             })}
@@ -229,21 +293,25 @@ export default function HomePage() {
       </section>
 
       {/* Fleet Management Section */}
-      <section className="py-24 px-4 border-t border-[var(--border)]">
-        <div className="container mx-auto">
+      <section
+        className="py-16 md:py-24 px-4 md:px-6 lg:px-8 border-t border-[var(--border)] overflow-hidden mx-auto max-w-screen-2xl w-full"
+        ref={fleetRef}
+      >
+        <div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Image Section */}
+            {/* Image Section - Parallax */}
             <motion.div
-              className="relative rounded-2xl overflow-hidden"
+              className="relative rounded-2xl overflow-hidden shadow-xl h-96 md:h-[500px]"
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
+              style={{ y: fleetImageY }}
             >
               <img
-                src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop"
+                src="https://images.unsplash.com/photo-1567521464027-f127ff144326?w=800&h=600&fit=crop"
                 alt="Maritime Fleet Operations"
-                className="w-full h-auto object-cover"
+                className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             </motion.div>
@@ -260,7 +328,9 @@ export default function HomePage() {
               </h2>
 
               <p className="text-lg text-[var(--muted-foreground)] mb-8 leading-relaxed">
-                Monitor vessel telemetry with precision. Track speed, fuel consumption, cargo status, and environmental conditions from one unified dashboard.
+                Monitor vessel telemetry with precision. Track speed, fuel
+                consumption, cargo status, and environmental conditions from one
+                unified dashboard.
               </p>
 
               <div className="space-y-4 mb-8">
@@ -299,8 +369,11 @@ export default function HomePage() {
       </section>
 
       {/* Enterprise Security Section */}
-      <section className="py-24 px-4 border-t border-[var(--border)]">
-        <div className="container mx-auto">
+      <section
+        className="py-16 md:py-24 px-4 md:px-6 lg:px-8 border-t border-[var(--border)] overflow-hidden mx-auto max-w-screen-2xl w-full"
+        ref={securityRef}
+      >
+        <div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Content */}
             <motion.div
@@ -314,7 +387,9 @@ export default function HomePage() {
               </h2>
 
               <p className="text-lg text-[var(--muted-foreground)] mb-8 leading-relaxed">
-                Your fleet data is protected with military-grade encryption and role-based access control. Every command is logged and auditable.
+                Your fleet data is protected with military-grade encryption and
+                role-based access control. Every command is logged and
+                auditable.
               </p>
 
               <div className="space-y-4">
@@ -341,29 +416,42 @@ export default function HomePage() {
               </div>
             </motion.div>
 
-            {/* Security Visual */}
+            {/* Security Image - Parallax */}
             <motion.div
-              className="flex items-center justify-center"
+              className="relative rounded-2xl overflow-hidden shadow-xl h-96 md:h-[500px]"
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
+              style={{ y: securityImageY }}
             >
-              <div className="relative w-full aspect-square max-w-sm">
-                <div className="absolute inset-0 bg-[var(--accent)] rounded-2xl opacity-5" />
-                <div className="absolute inset-4 border border-[var(--accent)]/30 rounded-xl" />
-                <div className="absolute inset-8 bg-[var(--card)] rounded-lg border border-[var(--border)]/50 p-6 flex flex-col items-center justify-center">
-                  <Shield className="w-16 h-16 text-[var(--accent)] mb-4" />
-                  <p className="text-center text-sm font-medium">Military-Grade Security</p>
-                </div>
-              </div>
+              <img
+                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop"
+                alt="Enterprise Security and Monitoring"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             </motion.div>
           </div>
         </div>
       </section>
-      {/* Final CTA Section */}
-      <section className="py-24 px-4 border-t border-[var(--border)]">
-        <div className="container mx-auto text-center">
+      {/* Final CTA Section - with Parallax Background */}
+      <section className="relative py-24 md:py-32 px-4 md:px-6 lg:px-8 border-t border-[var(--border)] overflow-hidden mx-auto max-w-screen-2xl w-full">
+        {/* Parallax Background Image */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <motion.img
+            src="https://images.unsplash.com/photo-1498574336925-c6d647f08577?w=1600&h=600&fit=crop"
+            alt="Ocean background"
+            className="w-full h-full object-cover"
+            style={{ opacity: 0.08 }}
+          />
+          <div
+            className="absolute inset-0 bg-[var(--background)]"
+            style={{ opacity: 0.9 }}
+          />
+        </div>
+
+        <div className="text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -374,7 +462,9 @@ export default function HomePage() {
               Ready to Take Command?
             </h2>
             <p className="text-[var(--muted-foreground)] max-w-2xl mx-auto mb-10 text-lg">
-              Join operators who trust Fleet Command for real-time maritime operations. Start managing your fleet with precision and confidence.
+              Join operators who trust Fleet Command for real-time maritime
+              operations. Start managing your fleet with precision and
+              confidence.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -398,23 +488,31 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[var(--border)] py-12 px-4 bg-[var(--card)]">
-        <div className="container mx-auto">
+      <footer className="border-t border-[var(--border)] py-12 md:py-16 px-4 md:px-6 lg:px-8 bg-[var(--card)] mx-auto max-w-screen-2xl w-full">
+        <div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div>
               <h4 className="font-bold mb-4">Fleet Command</h4>
-              <p className="text-[var(--muted-foreground)] text-sm">Real-time maritime operations platform</p>
+              <p className="text-[var(--muted-foreground)] text-sm">
+                Real-time maritime operations platform
+              </p>
             </div>
             <div>
               <h4 className="font-bold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm text-[var(--muted-foreground)]">
                 <li>
-                  <a href="#" className="hover:text-[var(--primary)] transition-colors">
+                  <a
+                    href="#"
+                    className="hover:text-[var(--primary)] transition-colors"
+                  >
                     Dashboard
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-[var(--primary)] transition-colors">
+                  <a
+                    href="#"
+                    className="hover:text-[var(--primary)] transition-colors"
+                  >
                     Documentation
                   </a>
                 </li>
@@ -422,7 +520,9 @@ export default function HomePage() {
             </div>
             <div>
               <h4 className="font-bold mb-4">Contact</h4>
-              <p className="text-sm text-[var(--muted-foreground)]">operations@fleet.command</p>
+              <p className="text-sm text-[var(--muted-foreground)]">
+                operations@fleet.command
+              </p>
             </div>
           </div>
 

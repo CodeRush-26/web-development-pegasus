@@ -218,9 +218,9 @@ export default function CaptainView() {
                   <Cpu size={14} /> Nav Computer
                 </span>
                 <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${myShip.isSimulating ? "bg-green-400 animate-pulse" : "bg-amber-400"}`} />
+                  <div className={`w-2 h-2 rounded-full ${(myShip.status === "normal" || myShip.status === "rerouting") ? "bg-green-400 animate-pulse" : "bg-amber-400"}`} />
                   <span className="text-[10px] font-mono text-white/50 uppercase">
-                    {myShip.isSimulating ? "ENGAGED" : "STANDBY"}
+                    {(myShip.status === "normal" || myShip.status === "rerouting") ? "ENGAGED" : "STANDBY"}
                   </span>
                   {isNavOpen ? <ChevronDown size={14} className="text-white/40" /> : <ChevronUp size={14} className="text-white/40" />}
                 </div>

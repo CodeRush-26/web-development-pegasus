@@ -30,14 +30,11 @@ function computeRoute(ship, zones, weatherCells = []) {
   if (!destPort) return ship;
 
   const { nodes, meta } = buildGrid(NAVIGABLE_POLYGON, zones, weatherCells, ship.routingStrategy || 'optimized');
-  const path = findPath(ship.position, destPort.position, nodes, meta);
+  let path = findPath(ship.position, destPort.position, nodes, meta);
 
   if (!path || path.length === 0) {
-    return {
-      ...ship,
-      status: "stranded",
-      currentPath: [],
-    };
+    // Fallback to a straight line to destination if A* fails
+    path = [ship.position, destPort.position];
   }
 
   // Fuel feasibility check
