@@ -14,9 +14,9 @@ function ShipMarker({ ship }: { ship: ShipState }) {
   const isAdverse = ship.weatherPenaltyActive;
   
   let color = "#10b981"; // green
-  if (ship.status === "rerouting") color = "#f59e0b"; // amber
+  if (ship.status === "rerouting" || ship.status === "evacuating") color = "#f59e0b"; // amber
   if (ship.status === "distressed" || ship.status === "stranded" || ship.status === "out_of_fuel") color = "#ef4444"; // red
-  if (ship.status === "stopped") color = "#6b7280"; // gray
+  if (ship.status === "holding") color = "#6b7280"; // gray
 
   return (
     <AdvancedMarker
